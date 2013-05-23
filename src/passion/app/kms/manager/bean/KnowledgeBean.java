@@ -10,7 +10,7 @@ public class KnowledgeBean {
 	/**
 	 * 数据库中的ID
 	 */
-	private int id;
+	private long id;
 	
 	/**
 	 * 知识格式类型，1为TEXT
@@ -22,11 +22,11 @@ public class KnowledgeBean {
 	 */
 	private String content;
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 

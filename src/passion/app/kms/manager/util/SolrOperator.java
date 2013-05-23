@@ -56,4 +56,24 @@ public class SolrOperator
 	{
 		return true;
 	}
+	
+	/**
+	 * 删除索引中的特定内容
+	 * @param title
+	 * @return  删除成功或者失败
+	 */
+	public boolean deleteTitle(long title)
+	{
+		return true;
+	}
+	
+	/**
+	 * 更新索引中的记录信息
+	 * @param title 更新的内容
+	 * @return 更新成功或者失败
+	 */
+	public boolean updateTitle(TitleBean title)
+	{
+		return true;
+	}
 }

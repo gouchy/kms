@@ -10,7 +10,7 @@ public class UserBean {
 	/**
 	 * 数据库中的编号
 	 */
-	private int id;
+	private long id;
 	
 	/**
 	 * 用户名
@@ -47,11 +47,11 @@ public class UserBean {
 	 */
 	private String token;
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 

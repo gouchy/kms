@@ -15,7 +15,7 @@ public class TitleBean {
 	 * 数据库中的编号
 	 */
 	@Field
-	private int id;
+	private long id;
 	
 	/**
 	 * 标题类型，1为主标题，2为副标题
@@ -32,28 +32,34 @@ public class TitleBean {
 	 * 标题所对应的的知识ID
 	 */
 	@Field
-	private int knowledgeId;
+	private long knowledgeId;
 	
 	/**
 	 * 所属分类的ID
 	 */
-	private int subjectId;
+	private long subjectId;
 	
 	/**
 	 * 这个标题所属的用户
 	 */
-	private int userId;
+	private long userId;
 	
 	/**
 	 * 更新的时间
 	 */
 	private Date updateDate;
+	
+	/**
+	 * 索引状态
+	 * 0：成功索引，1：新增未索引 2：更新未索引，3：已标记删除，但未从索引中删除，4：已删除
+	 */
+	private int indexStatus;
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
@@ -73,19 +79,19 @@ public class TitleBean {
 		this.name = name;
 	}
 
-	public int getKnowledgeId() {
+	public long getKnowledgeId() {
 		return knowledgeId;
 	}
 
-	public void setKnowledgeId(int knowledgeId) {
+	public void setKnowledgeId(long knowledgeId) {
 		this.knowledgeId = knowledgeId;
 	}
 
-	public int getSubjectId() {
+	public long getSubjectId() {
 		return subjectId;
 	}
 
-	public void setSubjectId(int subjectId) {
+	public void setSubjectId(long subjectId) {
 		this.subjectId = subjectId;
 	}
 
@@ -97,11 +103,21 @@ public class TitleBean {
 		this.updateDate = updateDate;
 	}
 
-	public int getUserId() {
+	public int getIndexStatus()
+	{
+		return indexStatus;
+	}
+
+	public void setIndexStatus(int indexStatus)
+	{
+		this.indexStatus = indexStatus;
+	}
+
+	public long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(int userId) {
+	public void setUserId(long userId) {
 		this.userId = userId;
 	}
 }

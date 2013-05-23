@@ -10,7 +10,7 @@ public class SubjectBean {
 	/**
 	 * 数据库中的ID
 	 */
-	private int id;
+	private long id;
 	
 	/**
 	 * 分类名称
@@ -25,18 +25,18 @@ public class SubjectBean {
 	/**
 	 * 分类所属用户的ID
 	 */
-	private int userId;
+	private long userId;
 	
 	/**
 	 * 上一级分类的ID，-1代表为主分类
 	 */
-	private int parentSubject;
+	private long parentSubject;
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
@@ -56,19 +56,19 @@ public class SubjectBean {
 		this.type = type;
 	}
 
-	public int getUserId() {
+	public long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(int userId) {
+	public void setUserId(long userId) {
 		this.userId = userId;
 	}
 
-	public int getParentSubject() {
+	public long getParentSubject() {
 		return parentSubject;
 	}
 
-	public void setParentSubject(int parentSubject) {
+	public void setParentSubject(long parentSubject) {
 		this.parentSubject = parentSubject;
 	}
 }
