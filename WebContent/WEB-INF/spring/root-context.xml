@@ -7,26 +7,26 @@
 
 
 	<!-- 数据源定义 -->
-	<beans:bean id="datasource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
-		<beans:property name="driverClass" value="com.mysql.jdbc.Driver"></beans:property>
-		<beans:property name="jdbcUrl" value="jdbc:mysql://localhost:3306/kms"></beans:property>
-		<beans:property name="user" value="root"></beans:property>
-		<beans:property name="password" value=""></beans:property>
-		<beans:property name="initialPoolSize" value="5"></beans:property>
-		<beans:property name="minPoolSize" value="5"></beans:property>
-		<beans:property name="maxPoolSize" value="20"></beans:property>
-	</beans:bean>
+	<bean id="datasource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="com.mysql.jdbc.Driver"></property>
+		<property name="jdbcUrl" value="jdbc:mysql://localhost:3306/kms"></property>
+		<property name="user" value="root"></property>
+		<property name="password" value=""></property>
+		<property name="initialPoolSize" value="5"></property>
+		<property name="minPoolSize" value="5"></property>
+		<property name="maxPoolSize" value="20"></property>
+	</bean>
 
 	<!-- 数据会话管理 -->
-	<beans:bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-		<beans:property name="configLocation" value="classpath:daoconfig.xml"></beans:property>
-		<beans:property name="dataSource" ref="datasource"></beans:property>
-	</beans:bean>
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="configLocation" value="classpath:daoconfig.xml"></property>
+		<property name="dataSource" ref="datasource"></property>
+	</bean>
 
 	<!-- 扫描DAO -->
-	<beans:bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-		<beans:property name="basePackage" value="passion.app.kms.manager.dao" />
-	</beans:bean>
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="passion.app.kms.manager.dao" />
+	</bean>
 
-	<context:component-scan base-package="passion.app.kms" />
+	
 </beans>
