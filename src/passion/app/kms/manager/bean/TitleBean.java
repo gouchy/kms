@@ -50,6 +50,11 @@ public class TitleBean {
 	private Date updateDate;
 	
 	/**
+	 * 删除标记 0：未删除 1：已删除
+	 */
+	private int deleteFlag;
+	
+	/**
 	 * 索引状态
 	 * 0：成功索引，1：新增未索引 2：更新未索引，3：已标记删除，但未从索引中删除，4：已删除
 	 */
@@ -101,6 +106,16 @@ public class TitleBean {
 
 	public void setUpdateDate(Date updateDate) {
 		this.updateDate = updateDate;
+	}
+
+	public int getDeleteFlag()
+	{
+		return deleteFlag;
+	}
+
+	public void setDeleteFlag(int deleteFlag)
+	{
+		this.deleteFlag = deleteFlag;
 	}
 
 	public int getIndexStatus()

@@ -5,13 +5,12 @@
 
 	<!-- Root Context: defines shared resources visible to all other web components -->
 
-
 	<!-- 数据源定义 -->
 	<bean id="datasource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
 		<property name="driverClass" value="com.mysql.jdbc.Driver"></property>
-		<property name="jdbcUrl" value="jdbc:mysql://localhost:3306/kms"></property>
+		<property name="jdbcUrl" value="jdbc:mysql://192.168.1.100:3306/kms"></property>
 		<property name="user" value="root"></property>
-		<property name="password" value=""></property>
+		<property name="password" value="cgq"></property>
 		<property name="initialPoolSize" value="5"></property>
 		<property name="minPoolSize" value="5"></property>
 		<property name="maxPoolSize" value="20"></property>

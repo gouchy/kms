@@ -1,5 +1,7 @@
 package passion.app.kms.manager.dao;
 
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 
 import passion.app.kms.manager.bean.UserBean;
@@ -28,4 +30,13 @@ public interface UserMapper {
 	 */
 	@Select("select * from kms_user where username = #{username} and password= #{password}")
 	public UserBean readUserByUsernameAndPassword(String username, String password);
+	
+	/**
+	 * 创建用户
+	 * @param user 用户信息，实际创建的用户id会在成功后返回
+	 * @return 受影响的行数
+	 */
+	@Insert("insert into kms_user (username, password, usertype, userrole, email, mobile, token) values (#{username}, #{password}, #{usertype}, #{userrole}, #{email}, #{mobile}, #{token})")
+	@Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+	public int createUser(UserBean user);
 }

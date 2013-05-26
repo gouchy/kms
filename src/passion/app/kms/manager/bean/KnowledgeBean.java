@@ -21,6 +21,11 @@ public class KnowledgeBean {
 	 * 知识内容
 	 */
 	private String content;
+	
+	/**
+	 * 删除标记 0：未删除 1：已删除
+	 */
+	private int deleteFlag;
 
 	public long getId() {
 		return id;
@@ -44,5 +49,15 @@ public class KnowledgeBean {
 
 	public void setContent(String content) {
 		this.content = content;
+	}
+
+	public int getDeleteFlag()
+	{
+		return deleteFlag;
+	}
+
+	public void setDeleteFlag(int deleteFlag)
+	{
+		this.deleteFlag = deleteFlag;
 	}
 }

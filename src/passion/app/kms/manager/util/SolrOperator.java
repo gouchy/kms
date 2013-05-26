@@ -7,6 +7,11 @@ import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import passion.app.kms.base.BaseConfig;
 import passion.app.kms.manager.bean.TitleBean;
 
+/**
+ * Solr操作类
+ * @author gouchy
+ *
+ */
 public class SolrOperator
 {
 	/*

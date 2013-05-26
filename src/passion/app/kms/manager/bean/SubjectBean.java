@@ -31,6 +31,11 @@ public class SubjectBean {
 	 * 上一级分类的ID，-1代表为主分类
 	 */
 	private long parentSubject;
+	
+	/**
+	 * 删除标识 0：有效 1：已被删除
+	 */
+	private int deleteFlag;
 
 	public long getId() {
 		return id;
@@ -70,5 +75,15 @@ public class SubjectBean {
 
 	public void setParentSubject(long parentSubject) {
 		this.parentSubject = parentSubject;
+	}
+
+	public int getDeleteFlag()
+	{
+		return deleteFlag;
+	}
+
+	public void setDeleteFlag(int deleteFlag)
+	{
+		this.deleteFlag = deleteFlag;
 	}
 }

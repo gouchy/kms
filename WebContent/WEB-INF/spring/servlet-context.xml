@@ -27,5 +27,13 @@
 
 	<context:component-scan base-package="passion.app.kms" />
 
+	<!-- Bean Veiw setting -->
+	<beans:bean class="org.springframework.web.servlet.view.BeanNameViewResolver">  
+	    <beans:property name="order" value="1" />  
+	</beans:bean> 
+
+	<!-- 返回的数据用json编码 -->
+	<beans:bean id="jsonView" class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
+	</beans:bean>
 
 </beans:beans>
