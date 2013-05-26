@@ -2,6 +2,7 @@ package passion.app.kms.manager.dao;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import passion.app.kms.manager.bean.UserBean;
@@ -20,7 +21,7 @@ public interface UserMapper {
 	 * @return
 	 */
 	@Select("select * from kms_user where username = #{username}")
-	public UserBean readUserByUsername(String username);
+	public UserBean readUserByUsername(@Param("username") String username);
 	
 	/**
 	 * 按照指定的用户名和密码取出数据库是否存在这样的用户
@@ -29,7 +30,7 @@ public interface UserMapper {
 	 * @return 用户数据对象
 	 */
 	@Select("select * from kms_user where username = #{username} and password= #{password}")
-	public UserBean readUserByUsernameAndPassword(String username, String password);
+	public UserBean readUserByUsernameAndPassword(@Param("username") String username, @Param("password") String password);
 	
 	/**
 	 * 创建用户

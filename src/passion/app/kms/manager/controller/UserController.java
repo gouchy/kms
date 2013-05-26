@@ -86,7 +86,7 @@ public class UserController {
 	public @ResponseBody ResultBean loginUser(Model model,
 							 HttpSession session,
 							 @RequestParam("username") String username,
-							 @RequestBody String password)
+							 @RequestParam("password") String password)
 	{
 		ResultBean result = new ResultBean(ErrorCode.OK);
 		// 检查必备的参数是否正确
