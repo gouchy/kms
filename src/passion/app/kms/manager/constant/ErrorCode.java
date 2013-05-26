@@ -15,7 +15,7 @@ public class ErrorCode
 	/**
 	 * 参数非法
 	 */
-	public final static int PARA_IS_NULL = 10002;
+	public final static int PARA_IS_ERROR = 10002;
 	
 	/**
 	 * 数据库操作失败

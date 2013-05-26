@@ -42,13 +42,13 @@ public class UserController {
 		// 检查必须的字段是否都已经有了
 		if(user.getUsername() == null || user.getUsername().equals(""))
 		{
-			result.setRetcode(ErrorCode.PARA_IS_NULL);
+			result.setRetcode(ErrorCode.PARA_IS_ERROR);
 			return result;
 		}
 		
 		if(user.getPassword() == null || user.getPassword().equals(""))
 		{
-			result.setRetcode(ErrorCode.PARA_IS_NULL);
+			result.setRetcode(ErrorCode.PARA_IS_ERROR);
 			return result;
 		}
 				
@@ -92,13 +92,13 @@ public class UserController {
 		// 检查必备的参数是否正确
 		if(username == null || username.equals(""))
 		{
-			result.setRetcode(ErrorCode.PARA_IS_NULL);
+			result.setRetcode(ErrorCode.PARA_IS_ERROR);
 			return result;
 		}
 		
 		if(password == null || password.equals(""))
 		{
-			result.setRetcode(ErrorCode.PARA_IS_NULL);
+			result.setRetcode(ErrorCode.PARA_IS_ERROR);
 			return result;
 		}
 		

@@ -35,7 +35,7 @@ public class SubjectController
 		// 检查参数完整性
 		if(subject.getName() == null || subject.getName().equals(""))
 		{
-			result.setRetcode(ErrorCode.PARA_IS_NULL);
+			result.setRetcode(ErrorCode.PARA_IS_ERROR);
 			return result;
 		}
 		
@@ -47,11 +47,15 @@ public class SubjectController
 		}
 		catch(Exception e)
 		{
-			result.setRetcode(ErrorCode.PARA_IS_NULL);
+			result.setRetcode(ErrorCode.PARA_IS_ERROR);
 			return result;
 		}		
 		subject.setUserId(userId);
 		
+		// 推荐分类
+		subject.setType(1);
+		
+		// 新增节点都为叶子节点
 		subject.setType(0);
 		
 		// 存入数据库
@@ -59,6 +63,12 @@ public class SubjectController
 		{
 			result.setRetcode(ErrorCode.DB_FAIL);
 			return result;
+		}
+		
+		// 修改上级节点为非叶子节点
+		if(subject.getParentSubject() != 0)
+		{
+			subjectMapper.updateSubjectNotLeaf(subject.getParentSubject());
 		}
 		
 		return result;
@@ -80,7 +90,7 @@ public class SubjectController
 		// 检查参数
 		if(subjectName == null || subjectName.equals(""))
 		{
-			result.setRetcode(ErrorCode.PARA_IS_NULL);
+			result.setRetcode(ErrorCode.PARA_IS_ERROR);
 			return result;
 		}
 		
@@ -93,7 +103,7 @@ public class SubjectController
 			userId = Integer.parseInt((String) session.getAttribute("userId"));
 		} catch (Exception e)
 		{
-			result.setRetcode(ErrorCode.PARA_IS_NULL);
+			result.setRetcode(ErrorCode.PARA_IS_ERROR);
 			return result;
 		}
 		if(subjectMapper.checkSubjectOwner(id, userId) == 0)
@@ -106,7 +116,7 @@ public class SubjectController
 		SubjectBean updateSubject = subjectMapper.readSubjectById(id);
 		if(updateSubject == null)
 		{
-			result.setRetcode(ErrorCode.PARA_IS_NULL);
+			result.setRetcode(ErrorCode.PARA_IS_ERROR);
 			return result;
 		}
 		updateSubject.setName(subjectName);
@@ -120,10 +130,10 @@ public class SubjectController
 	}
 	
 	/**
-	 * 至某条知识分类为删除
+	 * 置某条知识分类为删除
 	 * @param session 会话
  	 * @param id 删除的知识分类id
-	 * @return 返回值 PARA_IS_NULL, NO_RIGHT, DB_FAIL, OK
+	 * @return 返回值 PARA_IS_ERROR, NO_RIGHT, DB_FAIL, OK
 	 */
 	@RequestMapping(value = "/subject", method = RequestMethod.DELETE, produces = {"application/json"})
 	public @ResponseBody ResultBean deleteSubjectById(HttpSession session, @PathVariable("id") long id)
@@ -138,10 +148,17 @@ public class SubjectController
 			userId = Integer.parseInt((String) session.getAttribute("userId"));
 		} catch (Exception e)
 		{
-			result.setRetcode(ErrorCode.PARA_IS_NULL);
+			result.setRetcode(ErrorCode.PARA_IS_ERROR);
 			return result;
 		}
-		if (subjectMapper.checkSubjectOwner(id, userId) == 0)
+		
+		SubjectBean checkSubject = subjectMapper.readSubjectById(id);
+		if (checkSubject == null)
+		{
+			result.setRetcode(ErrorCode.PARA_IS_ERROR);
+			return result;
+		}
+		if (checkSubject.getUserId() == userId)
 		{
 			result.setRetcode(ErrorCode.NO_RIGHT);
 			return result;
@@ -153,7 +170,18 @@ public class SubjectController
 			result.setRetcode(ErrorCode.DB_FAIL);
 			return result;
 		}
-
+		
+		// 查询上级节点是否还有叶子节点
+		if(checkSubject.getParentSubject() != 0)
+		{
+			List<SubjectBean> checkChildSubjectList = subjectMapper.readChildSubject(checkSubject.getParentSubject(), userId);
+			if(checkChildSubjectList == null || checkChildSubjectList.size() == 0)
+			{
+				// 已没有叶子节点，直接置为叶子节点
+				subjectMapper.updateSubjectLeaf(checkSubject.getParentSubject());
+			}
+		}
+		
 		return result;
 	}
 	
@@ -161,9 +189,9 @@ public class SubjectController
 	 * 获得子分类列表
 	 * @param session 会话
 	 * @param parentSubjectId 父分类ID， -1为根ID
-	 * @return 返回值 PARA_IS_NULL, DB_FAIL, OK
+	 * @return 返回值 PARA_IS_ERROR, DB_FAIL, OK
 	 */
-	@RequestMapping(value = "/subject", method = RequestMethod.GET, produces = {"application/json"})
+	@RequestMapping(value = "/subject/{id}", method = RequestMethod.GET, produces = {"application/json"})
 	public @ResponseBody ResultBean getChildSubjectList(HttpSession session, @PathVariable("id") long parentSubjectId)
 	{
 		ResultBean result = new ResultBean(ErrorCode.OK);
@@ -176,7 +204,7 @@ public class SubjectController
 			userId = Integer.parseInt((String) session.getAttribute("userId"));
 		} catch (Exception e)
 		{
-			result.setRetcode(ErrorCode.PARA_IS_NULL);
+			result.setRetcode(ErrorCode.PARA_IS_ERROR);
 			return result;
 		}
 		if (subjectMapper.checkSubjectOwner(parentSubjectId, userId) == 0)
@@ -186,7 +214,7 @@ public class SubjectController
 		}
 		
 		// 取出子记录
-		List<SubjectBean> childSubjectList = subjectMapper.readChildSubject(parentSubjectId);
+		List<SubjectBean> childSubjectList = subjectMapper.readChildSubject(parentSubjectId, userId);
 		
 		result.addEntry("subjectList", childSubjectList);
 		

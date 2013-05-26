@@ -28,7 +28,7 @@ public class SubjectBean {
 	private long userId;
 	
 	/**
-	 * 上一级分类的ID，-1代表为主分类
+	 * 上一级分类的ID，0代表为主分类
 	 */
 	private long parentSubject;
 	
@@ -36,6 +36,11 @@ public class SubjectBean {
 	 * 删除标识 0：有效 1：已被删除
 	 */
 	private int deleteFlag;
+	
+	/**
+	 * 最小叶子标识 0：叶子 1：还有下级
+	 */
+	private int leaf;
 
 	public long getId() {
 		return id;
@@ -85,5 +90,15 @@ public class SubjectBean {
 	public void setDeleteFlag(int deleteFlag)
 	{
 		this.deleteFlag = deleteFlag;
+	}
+
+	public int getLeaf()
+	{
+		return leaf;
+	}
+
+	public void setLeaf(int leaf)
+	{
+		this.leaf = leaf;
 	}
 }

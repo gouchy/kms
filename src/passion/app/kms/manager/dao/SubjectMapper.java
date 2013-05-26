@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -21,7 +22,7 @@ public interface SubjectMapper
 	 * @param subject 知识分类，id在执行完成后获得插入数据的id
 	 * @return  受影响的行数
 	 */
-	@Insert("insert into kms_subject (name, type, userId, parentSubject) values (#{name}， #{type}, #{userId}, #{parentSubject})")
+	@Insert("insert into kms_subject (name, type, userId, parentSubject, leaf) values (#{name}， #{type}, #{userId}, #{parentSubject}, #{leaf})")
 	@Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
 	public int createSubject(SubjectBean subject);
 	
@@ -31,7 +32,7 @@ public interface SubjectMapper
 	 * @return 知识分类信息
 	 */
 	@Select("select * from kms_subject where id = #{id}")
-	public SubjectBean readSubjectById(long id);
+	public SubjectBean readSubjectById(@Param("id") long id);
 	
 	/**
 	 * 更新知识分类信息
@@ -47,15 +48,15 @@ public interface SubjectMapper
 	 * @return 受影响的行数
 	 */
 	@Update("update kms_subject set deleteFlag =1 where id = #{id}")
-	public int updateSubjectDeleteFlag(long id);
+	public int updateSubjectDeleteFlag(@Param("id") long id);
 	
 	/**
 	 * 读取指定ID知识分类的子分类
 	 * @param id 指定知识分类Id
 	 * @return 子知识分类列表
 	 */
-	@Select("select * from kms_subject where parentSubject = #{id} and deleteFlag = 0")
-	public List<SubjectBean> readChildSubject(long id);
+	@Select("select * from kms_subject where parentSubject = #{id} and deleteFlag = 0 and userId = #{userId}")
+	public List<SubjectBean> readChildSubject(@Param("id") long id, @Param("userId") long userId);
 	
 	/**
 	 * 检查知识分类的拥有者
@@ -63,5 +64,21 @@ public interface SubjectMapper
 	 * @param userId 用户的ID
 	 */
 	@Select("select count(*) from kms_subject where id = #{subjectId} and userId = #{userId}")
-	public int checkSubjectOwner(long subjectId, long userId);
+	public int checkSubjectOwner(@Param("subjectId") long subjectId, @Param("userId") long userId);
+	
+	/**
+	 * 更新节点为非叶子节点
+	 * @param subjectId
+	 * @return
+	 */
+	@Update("update kms_subject set leaf = 1 where id = #{subjectId}")
+	public int updateSubjectNotLeaf(@Param("subjectId") long subjectId);
+	
+	/**
+	 * 更新节点为叶子节点
+	 * @param subjectId
+	 * @return
+	 */
+	@Update("update kms_subject set leaf = 0 where id = #{subjectId}")
+	public int updateSubjectLeaf(@Param("subjectId") long subjectId);
 }
