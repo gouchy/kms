@@ -1,7 +1,8 @@
 ﻿ // 页面完成加载初始化
  $(document).ready(function () {
 	// 布局设置
-    $('body').layout({ applyDefaultStyles: false });
+    $('body').layout({applyDefaultStyles: false,
+    	resizable: false});
  });
  
  $(function() {
@@ -35,7 +36,8 @@
 			switch(data.retcode)
 			{
 			case RET_OK:
-				jAlert("登录成功。", "提醒");
+				window.location.href = "manager/frame.html";
+				//jAlert("登录成功。", "提醒");
 				break;
 			case RET_PARA_IS_NULL:
 				$("#password").val("");
