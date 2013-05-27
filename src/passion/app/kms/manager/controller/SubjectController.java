@@ -102,10 +102,10 @@ public class SubjectController
 		
 		// 检查此条记录是否是当前用户的
 		// 取出用户ID
-		Integer userId = null;
+		long userId = 0;
 		try
 		{
-			userId = Integer.parseInt((String) session.getAttribute("userId"));
+			userId =  (long) session.getAttribute("userId");
 		} catch (Exception e)
 		{
 			result.setRetcode(ErrorCode.PARA_IS_ERROR);
@@ -147,10 +147,10 @@ public class SubjectController
 
 		// 检查记录是否属于当前用户
 		// 取出用户ID
-		Integer userId = null;
+		long userId = 0;
 		try
 		{
-			userId = Integer.parseInt((String) session.getAttribute("userId"));
+			userId =  (long) session.getAttribute("userId");
 		} catch (Exception e)
 		{
 			result.setRetcode(ErrorCode.PARA_IS_ERROR);
@@ -203,10 +203,10 @@ public class SubjectController
 		
 		// 检查权限
 		// 取出用户ID
-		Integer userId = null;
+		long userId = 0;
 		try
 		{
-			userId = Integer.parseInt((String) session.getAttribute("userId"));
+			userId =  (long) session.getAttribute("userId");
 		} catch (Exception e)
 		{
 			result.setRetcode(ErrorCode.PARA_IS_ERROR);
