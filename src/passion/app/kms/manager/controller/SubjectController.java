@@ -5,6 +5,7 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,7 @@ import passion.app.kms.manager.bean.SubjectBean;
 import passion.app.kms.manager.constant.ErrorCode;
 import passion.app.kms.manager.dao.SubjectMapper;
 
+@Controller
 public class SubjectController
 {
 	@Autowired
@@ -25,7 +27,7 @@ public class SubjectController
 	/**
 	 * 创建一个新的subject节点
 	 * @param subject 分类
-	 * @return 返回值
+	 * @return 返回值 PARA_IS_ERROR, DB_FAIL, OK
 	 */
 	@RequestMapping(value = "/subject", method = RequestMethod.PUT, consumes = {"application/json"}, produces = {"application/json"})
 	public @ResponseBody ResultBean createSubject(HttpSession session, @RequestBody SubjectBean subject)
@@ -40,10 +42,10 @@ public class SubjectController
 		}
 		
 		// 取出用户ID
-		Integer userId = null;
+		long userId = 0;
 		try
 		{
-			userId = Integer.parseInt((String)session.getAttribute("userId"));
+			userId =  (long) session.getAttribute("userId");
 		}
 		catch(Exception e)
 		{
@@ -70,6 +72,9 @@ public class SubjectController
 		{
 			subjectMapper.updateSubjectNotLeaf(subject.getParentSubject());
 		}
+		
+		// 返回的结果中增加新创建的subjectId编号
+		result.addEntry("subjectId", subject.getId());
 		
 		return result;
 	}

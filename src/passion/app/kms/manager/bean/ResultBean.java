@@ -70,5 +70,5 @@ public class ResultBean
 	/**
 	 * 返回结果码
 	 */
-	private HashMap<String, Object> value;
+	private HashMap<String, Object> value = new HashMap<String, Object>();
 }

@@ -22,7 +22,7 @@ public interface SubjectMapper
 	 * @param subject 知识分类，id在执行完成后获得插入数据的id
 	 * @return  受影响的行数
 	 */
-	@Insert("insert into kms_subject (name, type, userId, parentSubject, leaf) values (#{name}， #{type}, #{userId}, #{parentSubject}, #{leaf})")
+	@Insert("insert into kms_subject (`name`, `type`, userId, parentSubject, leaf) values (#{name}, #{type}, #{userId}, #{parentSubject}, #{leaf})")
 	@Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
 	public int createSubject(SubjectBean subject);
 	
@@ -39,7 +39,7 @@ public interface SubjectMapper
 	 * @param subject 知识分类信息，id：需要更新的数据id号，userId：原始创建者的Id号，name：需要更新的内容
 	 * @return 受影响的行数
 	 */
-	@Update("update kms_subject set name = #{name} where id = #{id} and userId = #{userId}")
+	@Update("update kms_subject set `name` = #{name} where id = #{id} and userId = #{userId}")
 	public int updateSubject(SubjectBean subject);
 	
 	/**

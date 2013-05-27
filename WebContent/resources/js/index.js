@@ -39,7 +39,7 @@
 				window.location.href = "manager/frame.html";
 				//jAlert("登录成功。", "提醒");
 				break;
-			case RET_PARA_IS_NULL:
+			case RET_PARA_IS_ERROR:
 				$("#password").val("");
 				jAlert("登录参数错误，请重试。", "提醒");
 				break;
