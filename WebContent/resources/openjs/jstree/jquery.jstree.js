@@ -1012,6 +1012,14 @@
 						if(!$(event.currentTarget).hasClass("jstree-loading")) {
 							this.select_node(event.currentTarget, true, event);
 						}
+					}, this)) 
+				.delegate("a", "dblclick.jstree", $.proxy(function (event){
+						// modify by gouchy for dbclick node
+						event.preventDefault();
+						event.currentTarget.blur();
+						if(!$(event.currentTarget).hasClass("jstree-loading")) {
+							this.dblclick_node(event.currentTarget, true, event);
+						}					
 					}, this))
 				.delegate("a", "mouseenter.jstree", $.proxy(function (event) {
 						if(!$(event.currentTarget).hasClass("jstree-loading")) {
@@ -1186,6 +1194,12 @@
 					this._fix_scroll(obj.eq(0));
 					this.__callback({ "obj" : obj, "e" : e });
 				}
+			},
+			// modify by gouchy for dblclick node
+			dblclick_node: function(obj, check, e) {
+				obj = this._get_node(obj);
+				if(obj == -1 || !obj || !obj.length) {return false;}
+				this.__callback({"obj": obj});
 			},
 			_fix_scroll : function (obj) {
 				var c = this.get_container()[0], t;

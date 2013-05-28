@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import passion.app.kms.manager.bean.ResultBean;
@@ -86,9 +85,9 @@ public class SubjectController
 	 * @param subjectName 知识分类内容
 	 * @return 返回值
 	 */
-	@RequestMapping(value = "/subject/{id}", method = RequestMethod.POST, produces = {"application/json"})
+	@RequestMapping(value = "/subject/{id}", method = RequestMethod.POST, consumes = {"application/json"}, produces = {"application/json"})
 	public @ResponseBody ResultBean udpateSubjectName(HttpSession session, @PathVariable("id") long id,
-													   @RequestParam("subjectName") String subjectName)
+													  @RequestBody String subjectName)
 	{
 		ResultBean result = new ResultBean(ErrorCode.OK);
 		
@@ -212,7 +211,7 @@ public class SubjectController
 			result.setRetcode(ErrorCode.PARA_IS_ERROR);
 			return result;
 		}
-		if (subjectMapper.checkSubjectOwner(parentSubjectId, userId) == 0)
+		if (parentSubjectId != 0 && subjectMapper.checkSubjectOwner(parentSubjectId, userId) == 0)
 		{
 			result.setRetcode(ErrorCode.DB_FAIL);
 			return result;

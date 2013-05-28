@@ -1,4 +1,8 @@
- // 页面完成加载初始化
+/***********************************************************************
+ * 页面空间初始化区域
+ */ 
+
+// 页面完成加载初始化
  $(document).ready(function () {
 	// 布局设置
 	$("body").layout({applyDefaultStyles: true});
@@ -20,33 +24,12 @@
 		"plugins": ["themes", "json_data", "ui", "crrm"],
 	});
 	
-	// 添加知识分类树的第一层节点
-	var subjectRequest = $.ajax({
-		type: "get",
-		url: "/kms/subject/0",
-	});
-	subjectRequest.success(function(data){
-		switch(data.retcode)
-		{
-		case RET_OK:
-			
-			break;
-		case RET_PARA_IS_ERROR:
-		case RET_DB_FAIL:
-		default:
-			jAlert("获取知识分类数据失败，请刷新后重新尝试。", "提醒");
-			break;
-		}
-	});
-	subjectRequest.error(function()
-	{
-		jAlert("网络访问失败，请稍后重试。", "提醒");
-	});
-	
+	// 加载知识分类列表
+	load_tree(0);
 	
  });
  
-// 初始化创建分类的窗口
+ // 初始化创建分类的窗口
  $(function(){
 	$("#create-subject-dialog").dialog({
 		autoOpen: false,
@@ -58,6 +41,10 @@
 			{
 				// 检查分类的名称是否符合要求
 				var tmpSubjectName = $("#create-subject-name").val();
+				if(tmpSubjectName != null)
+				{
+					tmpSubjectName = tmpSubjectName.trim();
+				}
 				if(tmpSubjectName == null || tmpSubjectName.length == 0)
 				{
 					jAlert("请输入新的分类的名称", "提醒");
@@ -118,6 +105,128 @@
 	}); 
  });
  
+ // 重命名知识分类的窗口
+ $(function(){
+		$("#rename-subject-dialog").dialog({
+			autoOpen: false,
+			height: 300,
+			width: 350,
+			modal: true,
+			buttons: {
+				"重命名": function() 
+				{
+					// 检查分类的名称是否符合要求
+					var tmpSubjectName = $("#rename-subject-name").val();
+					if(tmpSubjectName != null)
+					{
+						tmpSubjectName = tmpSubjectName.trim();
+					}
+					if(tmpSubjectName == null || tmpSubjectName.length == 0)
+					{
+						jAlert("请输入分类的名称", "提醒");
+						return;
+					}
+					
+					// 获取当前所在节点的id
+					var selectedNode = $("#subject-tree").jstree("get_selected");
+					var currentSubjectId = 0;
+					if(selectedNode != null && selectedNode.length > 0)
+					{
+						currentSubjectId = selectedNode.attr("id");
+					}
+					else
+					{
+						// 选中第一个节点
+						$("#subject-tree").jstree("select_node",$("li#0"));
+					}
+					
+					
+					// 调用后台，保存到数据库
+					var subjectAddRequest = $.ajax({
+						type: "post",
+						url: "/kms/subject/" + currentSubjectId,
+						contentType: "application/json",
+						data: tmpSubjectName
+					});
+					
+					subjectAddRequest.success(function(data){
+						switch(data.retcode)
+						{
+						case RET_OK:
+							// 在树中修改节点
+							$("#subject-tree").jstree("get_selected").children("a").text(tmpSubjectName);
+							$("#rename-subject-dialog").dialog("close");
+							break;
+						case RET_DB_FAIL:
+						case RET_PARA_IS_ERROR:
+						default:
+							jAlert("重命名分类失败了，请重新尝试。", "提醒");
+							break;
+						}
+					});
+					subjectAddRequest.error(function(){
+						jAlert("网络发生错误，请重新尝试。", "错误");
+					});
+					
+					
+				},
+				"放弃": function()
+				{
+					$(this).dialog("close");
+				}
+			}
+		}); 
+	 });
+ 
+ /**************************************************************************
+  * 公共函数定义
+  */
+ function load_tree(parentSubjectId) {
+	// 添加知识分类树的第一层节点
+	var subjectRequest = $.ajax({
+		type : "get",
+		url : "/kms/subject/" + parentSubjectId,
+	});
+	subjectRequest.success(function(data) {
+		switch (data.retcode) {
+		case RET_OK:
+			var tmpSubjectList = data.value.subjectList;
+			if (tmpSubjectList != null && tmpSubjectList.length > 0) {
+				for ( var i = 0; i < tmpSubjectList.length; i++) {
+					$("#subject-tree").jstree("create", "li#" + parentSubjectId, "inside", { // 根节点的最上面那个地方添加
+						"data" : {
+							"title" : tmpSubjectList[i].name
+						}, // 此处必须定义为一个对象
+						"attr" : {
+							"id" : tmpSubjectList[i].id
+						},
+					// 设置图片显示，文件夹形式和文件形式
+					// "icon": tmpSubjectList[i].leaf == 1 ?
+					// "../images/close-forder.png": "../images/file.png",
+					},
+					load_tree(tmpSubjectList[i].id),
+					true);
+				}
+			}
+			break;
+		case RET_PARA_IS_ERROR:
+		case RET_DB_FAIL:
+		default:
+			jAlert("获取知识分类数据失败，请刷新后重新尝试。", "提醒");
+			break;
+		}
+	});
+	subjectRequest.error(function() {
+		jAlert("网络访问失败，请稍后重试。", "提醒");
+	});
+
+}
+ 
+ 
+ /***************************************************************************
+	 * 知识分类按钮操作按钮处理事件
+	 */
+ 
  // 新增知识分类的按钮点击处理事件
  $(function(){
 	 $("#createSubject").button().click(function(event)
@@ -144,9 +253,24 @@
 	 $("#renameSubject").button().click(function(event)
 	 {
 		 // 如果当前选中的是root-subject，则不允许修改
-		 
-		 
-		 $("#subject-tree").jstree("rename");
+		 var subjectName = $("#subject-tree").jstree("get_selected").children("a").text().trim();
+		 $("#rename-subject-name").val(subjectName);
+		 $("#rename-subject-dialog").dialog("open");
 	 });
  });
  
+ 
+ /**********************************************************************
+  * 知识树事件处理
+  */
+ $(function(){
+	 $("#subject-tree").bind("select_node.jstree", function(e, data) {
+		 // 单击事件处理
+		 
+		 // 获得到点击的节点的ID编号
+		 var currentSubjectId = data.rslt.obj.attr("id");
+		 alert(currentSubjectId);
+		 
+		 
+	 });
+ });

@@ -55,7 +55,7 @@ public interface SubjectMapper
 	 * @param id 指定知识分类Id
 	 * @return 子知识分类列表
 	 */
-	@Select("select * from kms_subject where parentSubject = #{id} and deleteFlag = 0 and userId = #{userId}")
+	@Select("select * from kms_subject where parentSubject = #{id} and deleteFlag = 0 and userId = #{userId} order by id desc")
 	public List<SubjectBean> readChildSubject(@Param("id") long id, @Param("userId") long userId);
 	
 	/**
