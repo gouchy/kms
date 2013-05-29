@@ -1,6 +1,9 @@
 package passion.app.kms.base;
 
+import java.text.SimpleDateFormat;
 import java.util.concurrent.ConcurrentHashMap;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * 基本配置数据类
@@ -20,6 +23,7 @@ public class BaseConfig {
 		 * 测试初始化数据
 		 */
 		WECHAT_ACCOUNT.put("ccisv", "huawei");
+
 	}
 	
 	/**

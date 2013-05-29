@@ -139,7 +139,7 @@ public class SubjectController
  	 * @param id 删除的知识分类id
 	 * @return 返回值 PARA_IS_ERROR, NO_RIGHT, DB_FAIL, OK
 	 */
-	@RequestMapping(value = "/subject", method = RequestMethod.DELETE, produces = {"application/json"})
+	@RequestMapping(value = "/subject/{id}", method = RequestMethod.DELETE, produces = {"application/json"})
 	public @ResponseBody ResultBean deleteSubjectById(HttpSession session, @PathVariable("id") long id)
 	{
 		ResultBean result = new ResultBean(ErrorCode.OK);
@@ -162,9 +162,14 @@ public class SubjectController
 			result.setRetcode(ErrorCode.PARA_IS_ERROR);
 			return result;
 		}
-		if (checkSubject.getUserId() == userId)
+		if (checkSubject.getUserId() != userId)
 		{
 			result.setRetcode(ErrorCode.NO_RIGHT);
+			return result;
+		}
+		if (checkSubject.getLeaf() == 1)
+		{
+			result.setRetcode(ErrorCode.PARA_IS_ERROR);
 			return result;
 		}
 		
