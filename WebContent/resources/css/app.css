@@ -11,6 +11,7 @@ html {
 body {
 	width: 100%;
 	height: 100%;
+	font: normal 70% Georgia, sans-serif;
 }
 
 .header {
@@ -84,6 +85,9 @@ body {
 .l-topmenu-welcome a { 
 	color:#E7E7E7; 
 	text-decoration:underline
-} 
+}
 
-
+.button-panel
+{
+	padding-bottom: 10px;
+}

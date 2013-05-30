@@ -12,6 +12,7 @@
 <script type="text/javascript" src="../openjs/jquery/jquery-1.8.3.js"></script>
 <script type="text/javascript" src="../openjs/jqueryui/jquery-ui-1.10.3.js"></script>
 <script type="text/javascript" src="../openjs/jquerylayout/jquery.layout.js"></script>
+<script type="text/javascript" src="../openjs/jquerylayout/jquery.layout.resizePaneAccordions.js"></script>
 <script type="text/javascript" src="../openjs/jqueryalert/jquery.alerts.js"></script>
 <script type="text/javascript" src="../openjs/jstree/jquery.jstree.js"></script>
 <script type="text/javascript" src="../openjs/jqgrid/i18n/grid.locale-cn.js"></script>
@@ -19,6 +20,8 @@
 
 <script type="text/javascript" src="../js/common/errorcode.js"></script>
 <script type="text/javascript" src="../js/manager/frame.js"></script>
+<script type="text/javascript" src="../js/manager/knowledge.js"></script>
+<script type="text/javascript" src="../js/manager/subject.js"></script>
 </head>
 <body>
 	<div id="header-area" class="ui-layout-north">
@@ -33,9 +36,11 @@
 		<div id="left_panel">
 			<h3>知识管理</h3>
 			<div>
-				<input id="createSubject" type="button" value="新增">
-				<input id="removeSubject" type="button" value="删除">
-				<input id="renameSubject" type="button" value="重命名">
+				<div class="button-panel">
+					<input id="createSubject" type="button" value="新增">
+					<input id="removeSubject" type="button" value="删除">
+					<input id="renameSubject" type="button" value="重命名">
+				</div>
 				<div id="subject-tree">	
 				</div>
 			</div>
@@ -44,6 +49,11 @@
 		</div>
 	</div>
 	<div id="main-area" class="ui-layout-center">
+		<div class="button-panel">
+			<input id="createTextKnowledge" type="button" value="新增知识">
+			<input id="editKnowledge" type="button" value="编辑知识">
+			<input id="deleteKnowledge" type="button" value="删除选中">
+		</div>
 		<table id="title-grid"></table>
 		<div id="title-grid-pager"></div>
 	</div>
@@ -63,6 +73,15 @@
 		<fieldset>
 			<label>分类名称</label>
 			<input id="rename-subject-name" type="text">
+		</fieldset>
+	</div>
+	
+	<div id="create-text-knowledge-dialog" title="创建文本类知识">
+		<fieldset>
+			<label>知识标题</label>
+			<input type="text" id="knowledge-title">
+			<label>知识内容</label>
+			<textarea rows="10" cols="60" id="knowledge-content"></textarea>
 		</fieldset>
 	</div>
 </body>
