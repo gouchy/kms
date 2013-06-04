@@ -1,5 +1,7 @@
 package passion.app.kms.manager.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
@@ -63,4 +65,10 @@ public interface TitleMapper
 	 */
 	@Select("select count(*) from kms_subject s, kms_title t where t.id = #{titleId} and t.subjectId = s.id and s.userId = #{userId}")
 	public int checkTitleOwner(long titleId, long userId);
+	
+	@Select("select * from kms_title ")
+	public List<TitleBean> getTitleList(long page, long rows, long subjectId, long userId);
+	
+	@Select("select * from kms_title")
+	public List<TitleBean> getAllTitleList(long page, long rows, long userId);
 }

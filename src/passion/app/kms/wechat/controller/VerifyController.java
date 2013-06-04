@@ -8,10 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import passion.app.kms.base.BaseConfig;
 
@@ -36,13 +32,12 @@ public class VerifyController {
 	 * @return 跳转的页面
 	 * @throws NoSuchAlgorithmException 异常
 	 */
-	@RequestMapping(value= "/wechat/{account}", method = RequestMethod.GET)
 	public String verify(Model model,
-						  @PathVariable("account") String account,
-						  @RequestParam("signature") String signature,
-						  @RequestParam("timestamp") String timestamp,
-						  @RequestParam("nonce") String nonce,
-						  @RequestParam("echostr") String echostr) throws NoSuchAlgorithmException {
+						   String account,
+						  String signature,
+						   String timestamp,
+						   String nonce,
+						  String echostr) throws NoSuchAlgorithmException {
 		
 			log.info("Verify Request: signature:{}, timestamp:{}, nonce:{}, echostr:{}", new Object[]{signature, timestamp, nonce, echostr});
 			

@@ -12,10 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -41,10 +38,9 @@ public class MessageController {
 	 * @param xmlText 发送的微信内容
 	 * @return 跳转的jsp页面（消息类型所替代的xml）
 	 */
-	@RequestMapping(value = "/wechat/{account}", method = RequestMethod.POST)
 	public String message(Model model,
-									  @PathVariable("account") String account,
-									  @RequestBody String xmlText)
+									  String account,
+									   String xmlText)
 	{
 		Message msg = null;
 		Message responseMsg = null;

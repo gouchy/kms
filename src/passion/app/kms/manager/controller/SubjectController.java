@@ -3,21 +3,29 @@ package passion.app.kms.manager.controller;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.CookieParam;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
+import org.jboss.resteasy.annotations.Form;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import passion.app.kms.manager.bean.ResultBean;
 import passion.app.kms.manager.bean.SubjectBean;
 import passion.app.kms.manager.constant.ErrorCode;
 import passion.app.kms.manager.dao.SubjectMapper;
+import passion.app.kms.manager.data.UserData;
 
 @Controller
+@Path("/subject")
 public class SubjectController
 {
 	@Autowired
@@ -28,11 +36,13 @@ public class SubjectController
 	 * @param subject 分类
 	 * @return 返回值 PARA_IS_ERROR, DB_FAIL, OK
 	 */
-	@RequestMapping(value = "/subject", method = RequestMethod.PUT, consumes = {"application/json"}, produces = {"application/json"})
-	public @ResponseBody ResultBean createSubject(HttpSession session, @RequestBody SubjectBean subject)
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public  ResultBean createSubject(SubjectBean subject, @CookieParam("username") String username)
 	{
 		ResultBean result = new ResultBean(ErrorCode.OK);
-		
+
 		// 检查参数完整性
 		if(subject.getName() == null || subject.getName().equals(""))
 		{
@@ -41,16 +51,8 @@ public class SubjectController
 		}
 		
 		// 取出用户ID
-		long userId = 0;
-		try
-		{
-			userId =  (long) session.getAttribute("userId");
-		}
-		catch(Exception e)
-		{
-			result.setRetcode(ErrorCode.PARA_IS_ERROR);
-			return result;
-		}		
+		long userId = UserData.getBindId(username);
+		
 		subject.setUserId(userId);
 		
 		// 推荐分类
@@ -85,9 +87,12 @@ public class SubjectController
 	 * @param subjectName 知识分类内容
 	 * @return 返回值
 	 */
-	@RequestMapping(value = "/subject/{id}", method = RequestMethod.POST, consumes = {"application/json"}, produces = {"application/json"})
-	public @ResponseBody ResultBean udpateSubjectName(HttpSession session, @PathVariable("id") long id,
-													  @RequestBody String subjectName)
+	@POST
+	@Path("/{id}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResultBean udpateSubjectName(HttpSession session, @PathParam("id") long id,
+													  @Form String subjectName)
 	{
 		ResultBean result = new ResultBean(ErrorCode.OK);
 		
@@ -139,8 +144,11 @@ public class SubjectController
  	 * @param id 删除的知识分类id
 	 * @return 返回值 PARA_IS_ERROR, NO_RIGHT, DB_FAIL, OK
 	 */
-	@RequestMapping(value = "/subject/{id}", method = RequestMethod.DELETE, produces = {"application/json"})
-	public @ResponseBody ResultBean deleteSubjectById(HttpSession session, @PathVariable("id") long id)
+	@DELETE
+	@Path("/{id}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResultBean deleteSubjectById(HttpSession session, @PathParam("id") long id)
 	{
 		ResultBean result = new ResultBean(ErrorCode.OK);
 
@@ -200,22 +208,18 @@ public class SubjectController
 	 * @param parentSubjectId 父分类ID， -1为根ID
 	 * @return 返回值 PARA_IS_ERROR, DB_FAIL, OK
 	 */
-	@RequestMapping(value = "/subject/{id}", method = RequestMethod.GET, produces = {"application/json"})
-	public @ResponseBody ResultBean getChildSubjectList(HttpSession session, @PathVariable("id") long parentSubjectId)
+	@GET
+	@Path("/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResultBean getChildSubjectList( @PathParam("id") long parentSubjectId, 
+											@CookieParam("username") String username)
 	{
 		ResultBean result = new ResultBean(ErrorCode.OK);
 		
 		// 检查权限
 		// 取出用户ID
-		long userId = 0;
-		try
-		{
-			userId =  (long) session.getAttribute("userId");
-		} catch (Exception e)
-		{
-			result.setRetcode(ErrorCode.PARA_IS_ERROR);
-			return result;
-		}
+		long userId = UserData.getBindId(username);
+
 		if (parentSubjectId != 0 && subjectMapper.checkSubjectOwner(parentSubjectId, userId) == 0)
 		{
 			result.setRetcode(ErrorCode.DB_FAIL);

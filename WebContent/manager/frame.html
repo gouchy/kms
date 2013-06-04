@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<title>欢迎访问51Talking</title>
+<link type="text/css" rel="stylesheet" href="../css/app.css" />
+<link type="text/css" rel="stylesheet" href="../openjs/jqueryui/smoothness/jquery-ui-1.10.3.custom.css" />
+<link type="text/css" rel="stylesheet" href="../openjs/jqueryalert/jquery.alerts.css" />
+<link type="text/css" rel="stylesheet" href="../openjs/jqgrid/css/ui.jqgrid.css" />
+
+<script type="text/javascript" src="../openjs/jquery/jquery-1.8.3.js"></script>
+<script type="text/javascript" src="../openjs/jqueryui/jquery-ui-1.10.3.js"></script>
+<script type="text/javascript" src="../openjs/jquerylayout/jquery.layout.js"></script>
+<script type="text/javascript" src="../openjs/jquerylayout/jquery.layout.resizePaneAccordions.js"></script>
+<script type="text/javascript" src="../openjs/jqueryalert/jquery.alerts.js"></script>
+<script type="text/javascript" src="../openjs/jstree/jquery.jstree.js"></script>
+<script type="text/javascript" src="../openjs/jqgrid/i18n/grid.locale-cn.js"></script>
+<script type="text/javascript" src="../openjs/jqgrid/jquery.jqGrid.src.js"></script>
+
+<script type="text/javascript" src="../js/common/errorcode.js"></script>
+<script type="text/javascript" src="../js/manager/frame.js"></script>
+<script type="text/javascript" src="../js/manager/knowledge.js"></script>
+<script type="text/javascript" src="../js/manager/subject.js"></script>
+
+<script type="text/javascript" src="../rest-js"></script>
+</head>
+<body>
+	<div id="header-area" class="ui-layout-north">
+		<div>
+			<div>微信自动回复管理系统</div>
+			<div>
+				 <a href="#" class="l-link2">退出</a>
+			</div>
+		</div>
+	</div>
+	<div id="left-area" class="ui-layout-west">
+		<div id="left_panel">
+			<h3>知识管理</h3>
+			<div>
+				<div class="button-panel">
+					<input id="createSubject" type="button" value="新增">
+					<input id="removeSubject" type="button" value="删除">
+					<input id="renameSubject" type="button" value="重命名">
+				</div>
+				<div id="subject-tree">	
+				</div>
+			</div>
+			<h3>数据分析统计</h3>
+			<div id="report-list">报表显示</div>
+		</div>
+	</div>
+	<div id="main-area" class="ui-layout-center">
+		<div class="button-panel">
+			<input id="createTextKnowledge" type="button" value="新增知识">
+			<input id="editKnowledge" type="button" value="编辑知识">
+			<input id="deleteKnowledge" type="button" value="删除选中">
+		</div>
+		<table id="title-grid"></table>
+		<div id="title-grid-pager"></div>
+	</div>
+	<div id="footer-area" class="ui-layout-south">
+		<div>Copyright © 2013 www.51talking.com</div>
+	</div>
+	
+	<!-- 对话框类 -->
+	<div id="create-subject-dialog" title="创建新的知识分类">
+		<fieldset>
+			<label>分类名称</label>
+			<input id="create-subject-name" type="text">
+		</fieldset>
+	</div>
+	
+	<div id="rename-subject-dialog" title="重命名知识分类">
+		<fieldset>
+			<label>分类名称</label>
+			<input id="rename-subject-name" type="text">
+		</fieldset>
+	</div>
+	
+	<div id="create-text-knowledge-dialog" title="创建文本类知识">
+		<form id="create-text-knowledge-form">
+			<fieldset>
+				<label>知识标题</label>
+				<input type="text" id="knowledge-title" name="knowledge-title" class="form-input">
+				<label>知识内容</label>
+				<textarea rows="19" cols="60" id="knowledge-content" name="knowledge-content" class="form-input"></textarea>
+				<label style="display: inline-block;">其它知识标题</label>
+				<button id="addMoreTitle" class="small-icon-button">新增</button>
+				<button id="deleteMoreTitle" class="small-icon-button">删除</button>
+				<div id="other-knowledge-title-panel">
+					<input type="text" id="other-knowledge-title" name="other-knowledge-title" class="form-input">
+				</div>
+				<input type="hidden" id="add-subject-id" name="add-subject-id">
+ 			</fieldset>
+		</form>
+	</div>
+	
+	<div id="edit-text-knowledge-dialog" title="修改文本类知识">
+		<fieldset>
+			<label>知识标题</label>
+			<input type="text" id="edit-knowledge-title" name="edit-knowledge-title" class="form-input">
+			<label>知识内容</label>
+			<textarea rows="19" cols="60" id="edit-knowledge-content" name= "edit-knowledge-content" class="form-input"></textarea>
+			<label style="display: inline-block;">其它知识标题</label>
+			<button id="edit-addMoreTitle" class="small-icon-button">新增</button>
+			<button id="edit-deleteMoreTitle" class="small-icon-button">删除</button>
+			<div id="edit-other-knowledge-title-panel">
+				<input type="text" id="edit-other-knowledge-title" name="edit-other-knowledge-title" class="form-input">
+			</div>
+			<input type="hidden" id="edit-subject-id" name="edit-subject-id">
+		</fieldset>
+	</div>
+</body>
+</html>
