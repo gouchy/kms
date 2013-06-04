@@ -10,7 +10,16 @@ import org.apache.solr.client.solrj.beans.Field;
  *
  */
 public class TitleBean {
-
+		
+	public final static int TYPE_TITLE_MAIN= 1;
+	public final static int TYPE_TITLE_OTHER = 2;
+	
+	public final static int INDEX_STATUS_OK = 0;
+	public final static int INDEX_NOT_ADD = 1;
+	public final static int INDEX_NOT_UPDATE = 2;
+	public final static int INDEX_NOT_DELETE = 3;
+	public final static int INDEX_DELETE = 4;
+	
 	/**
 	 * 数据库中的编号
 	 */

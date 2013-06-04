@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+			 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+			 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- *****************************************************************************
+		Mybatis与spring集成，自动将所有DAO层的Interface扫描进入spring容器
+	 -->
+	<!-- 数据源定义 -->
+	<bean id="datasource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="com.mysql.jdbc.Driver"></property>
+		<property name="jdbcUrl" value="jdbc:mysql://127.0.0.1:3306/kms?useUnicode=true&amp;characterEncoding=UTF8"></property>
+		<property name="user" value="root"></property>
+		<property name="password" value=""></property>
+		<property name="initialPoolSize" value="5"></property>
+		<property name="minPoolSize" value="5"></property>
+		<property name="maxPoolSize" value="20"></property>
+	</bean>
+	<!-- 数据会话管理 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="configLocation" value="classpath:daoconfig.xml"></property>
+		<property name="dataSource" ref="datasource"></property>
+	</bean>
+	<!-- 扫描DAO -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="passion.app.kms.manager.dao" />
+	</bean>
+
+	<!-- 扫描所有的Controller到Spring容器中 -->
+	<context:component-scan base-package="passion.app.kms" use-default-filters="false">
+		<context:include-filter type="regex" expression="passion.app.kms.manager.controller.*"/>
+	</context:component-scan>
+
+	<!-- 过滤器设置 -->
+	<bean id="tokenFilter" class="passion.app.kms.manager.util.TokenFilter">
+	</bean>
+
+</beans>

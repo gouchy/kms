@@ -2,21 +2,30 @@ package passion.app.kms.manager.controller;
 
 import java.util.UUID;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 
+import org.jboss.resteasy.annotations.Form;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import passion.app.kms.manager.bean.ResultBean;
 import passion.app.kms.manager.bean.UserBean;
 import passion.app.kms.manager.constant.ErrorCode;
 import passion.app.kms.manager.dao.UserMapper;
+import passion.app.kms.manager.data.UserData;
 
 /**
  * 用于用户的基本操作
@@ -24,6 +33,7 @@ import passion.app.kms.manager.dao.UserMapper;
  *
  */
 @Controller
+@Path("/user")
 public class UserController {
 	
 	@Autowired
@@ -35,8 +45,10 @@ public class UserController {
 	 * @param user 注册用户信息
 	 * @return 返回的结果 PARA_IS_NULL, USER_EXIST, DB_FAIL, OK
 	 */
-	@RequestMapping(value = "/user", method= RequestMethod.PUT, consumes = {"application/json"}, produces = {"application/json"})
-	public @ResponseBody ResultBean registerUser(@RequestBody UserBean user)
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResultBean registerUser(@Form UserBean user)
 	{
 		ResultBean result = new ResultBean(ErrorCode.OK);
 		// 检查必须的字段是否都已经有了
@@ -82,11 +94,11 @@ public class UserController {
 	 * @param password 登录用户密码
 	 * @return 返回结果 PARA_IS_NULL, USER_NOT_EXIST, OK
 	 */
-	@RequestMapping(value = "/user", method = RequestMethod.POST, produces = {"application/json"})
-	public @ResponseBody ResultBean loginUser(Model model,
-							 HttpSession session,
-							 @RequestParam("username") String username,
-							 @RequestParam("password") String password)
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResultBean loginUser(@QueryParam("username") String username,
+							     @QueryParam("password") String password,
+							     @Context HttpServletResponse response)
 	{
 		ResultBean result = new ResultBean(ErrorCode.OK);
 		// 检查必备的参数是否正确
@@ -102,6 +114,9 @@ public class UserController {
 			return result;
 		}
 		
+		// 用户名做小写转换
+		username = username.toLowerCase();
+		
 		// 查询数据库是否有此用户
 		UserBean checkUser = userMapper.readUserByUsernameAndPassword(username, password);
 		if(checkUser == null)
@@ -111,8 +126,22 @@ public class UserController {
 		}
 		
 		// 在Session中增加登录标识
-		session.setAttribute("userId", checkUser.getId());
-		session.setAttribute("username", checkUser.getUsername());
+		Cookie tokenCookie = new Cookie("token", UserData.getToken(username));
+		tokenCookie.setPath("/");
+		tokenCookie.setMaxAge(60 * 60 * 10);
+		response.addCookie(tokenCookie);
+		Cookie userCookie = new Cookie("username", username);
+		userCookie.setPath("/");
+		userCookie.setMaxAge(60 * 60 * 10);
+		response.addCookie(userCookie);		
+//		Cookie useridCookie = new Cookie("userid", Long.toString(checkUser.getId()));
+//		useridCookie.setPath("/");
+//		useridCookie.setMaxAge(60 * 60 * 10);
+//		response.addCookie(useridCookie);
+		
+		// 在内存中增加记录
+		UserData.activeUser(username);
+		UserData.addBindId(username, checkUser.getId());
 		
 		return result;
 	}
@@ -124,10 +153,11 @@ public class UserController {
 	 * @param username 用户名
 	 * @return 返回结果 USER_NOT_ONLINE, OK
 	 */
-	@RequestMapping(value = "/user", method = RequestMethod.DELETE, produces = {"application/json"})
-	public @ResponseBody ResultBean logoutUser(Model model,
+	@DELETE
+	@Consumes(MediaType.APPLICATION_JSON)
+	public ResultBean logoutUser(Model model,
 							  HttpSession session,
-							  @RequestParam("username") String username)
+							  @QueryParam("username") String username)
 	{
 		ResultBean result = new ResultBean(ErrorCode.OK);
 		// 检查提交者的身份是否是当前登录者的Session
@@ -141,6 +171,14 @@ public class UserController {
 		session.removeAttribute("userId");
 		session.removeAttribute("username");
 		
+		return result;
+	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResultBean getInfo()
+	{
+		ResultBean result = new ResultBean(ErrorCode.OK);
 		return result;
 	}
 	

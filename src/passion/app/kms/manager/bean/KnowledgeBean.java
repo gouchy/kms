@@ -7,6 +7,8 @@ package passion.app.kms.manager.bean;
  */
 public class KnowledgeBean {
 	
+	public final static int TYPE_TEXT = 1;
+	
 	/**
 	 * 数据库中的ID
 	 */
