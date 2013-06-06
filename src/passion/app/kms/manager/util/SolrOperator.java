@@ -1,8 +1,12 @@
 package passion.app.kms.manager.util;
 
+import java.io.IOException;
+
 import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.ConcurrentUpdateSolrServer;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
+import org.apache.solr.common.SolrInputDocument;
 
 import passion.app.kms.base.BaseConfig;
 import passion.app.kms.manager.bean.TitleBean;
@@ -56,9 +60,18 @@ public class SolrOperator
 	 * 用于增加内容至索引中
 	 * @param title 新增的知识标题
 	 * @return 新增成功或者失败
+	 * @throws IOException 
+	 * @throws SolrServerException 
 	 */
-	public boolean addTitle(TitleBean title)
+	public static boolean addTitle(TitleBean title) throws SolrServerException, IOException
 	{
+		SolrInputDocument document = new SolrInputDocument();
+		document.addField("id", title.getId());
+		document.addField("knowledge_id", title.getKnowledgeId());
+		document.addField("title", title.getName());
+		
+		getUpdateSolrServer().add(document);
+		getUpdateSolrServer().commit();
 		return true;
 	}
 	
@@ -67,8 +80,9 @@ public class SolrOperator
 	 * @param title
 	 * @return  删除成功或者失败
 	 */
-	public boolean deleteTitle(long title)
+	public static boolean deleteTitle(long title)
 	{
+		
 		return true;
 	}
 	
@@ -77,7 +91,7 @@ public class SolrOperator
 	 * @param title 更新的内容
 	 * @return 更新成功或者失败
 	 */
-	public boolean updateTitle(TitleBean title)
+	public static boolean updateTitle(TitleBean title)
 	{
 		return true;
 	}

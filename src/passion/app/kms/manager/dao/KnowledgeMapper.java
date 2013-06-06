@@ -19,7 +19,7 @@ public interface KnowledgeMapper
 	 * @param knowledge 知识内容，id属性在插入后获得记录号
 	 * @return 受影响的函数
 	 */
-	@Insert("insert into kms_knowledge (type, content) values (#{type}, #{content}")
+	@Insert("insert into kms_knowledge (type, content) values (#{type}, #{content})")
 	@Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
 	public int createKnowledge(KnowledgeBean knowledge);
 	

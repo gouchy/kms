@@ -79,21 +79,19 @@
 	</div>
 	
 	<div id="create-text-knowledge-dialog" title="创建文本类知识">
-		<form id="create-text-knowledge-form">
-			<fieldset>
-				<label>知识标题</label>
-				<input type="text" id="knowledge-title" name="knowledge-title" class="form-input">
-				<label>知识内容</label>
-				<textarea rows="19" cols="60" id="knowledge-content" name="knowledge-content" class="form-input"></textarea>
-				<label style="display: inline-block;">其它知识标题</label>
-				<button id="addMoreTitle" class="small-icon-button">新增</button>
-				<button id="deleteMoreTitle" class="small-icon-button">删除</button>
-				<div id="other-knowledge-title-panel">
-					<input type="text" id="other-knowledge-title" name="other-knowledge-title" class="form-input">
-				</div>
-				<input type="hidden" id="add-subject-id" name="add-subject-id">
- 			</fieldset>
-		</form>
+		<fieldset>
+			<label>知识标题</label>
+			<input type="text" id="knowledge-title"class="form-input">
+			<label>知识内容</label>
+			<textarea rows="19" cols="60" id="knowledge-content" class="form-input"></textarea>
+			<label style="display: inline-block;">其它知识标题</label>
+			<button id="addMoreTitle" class="small-icon-button">新增</button>
+			<button id="deleteMoreTitle" class="small-icon-button">删除</button>
+			<div id="other-knowledge-title-panel">
+				<input type="text" name="other-knowledge-title" class="form-input">
+			</div>
+			<input type="hidden" id="add-subject-id" name="add-subject-id">
+		</fieldset>
 	</div>
 	
 	<div id="edit-text-knowledge-dialog" title="修改文本类知识">

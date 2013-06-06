@@ -3,7 +3,7 @@
  */
  $(function(){
 	$("#title-grid").jqGrid({
-		url: "/kms/knowledge/title/0",
+		url: "/kms/rest/knowledge/title/0",
 		datatype: "json",
 		jsonReader: {
 			root: "value.rows",
@@ -28,7 +28,7 @@
 		sortname: "updateDate",
 		viewrecords: true,
 		sortorder: "desc",
-		caption: "知识列表",
+		caption: "所有知识",
 		height: window.screen.availHeight - 300
 	}); 
 	$("#title-grid").jqGrid("navGrid", "#title-grid-pager", 
@@ -47,33 +47,82 @@
 		buttons : {
 			"新增知识" : function() {
 				//检查输入内容的合法性
+				var title = $("#knowledge-title").val();
+				if(title == null)
+				{
+					jAlert("标题不能为空。", "提醒");
+					return;
+				}
+				title = title.trim();
+				if(title.length == 0)
+				{
+					jAlert("标题不能为空。", "提醒");
+					return;
+				}
 				
-				// 提交内容到服务端
-				var putRequest = $.ajax({
-					type: "put",
-					url: "/kms/knowledge",
-					data: $("#create-text-knowledge-form").serialize()
-				});
-				putRequest.success(function(data){
-					switch(data.retcode)
+				var content = $("#knowledge-content").val();
+				if(content == null)
+				{
+					jAlert("内容不能为空。", "提醒");
+					return;
+				}
+				content = content.trim();
+				if(content.length == 0)
+				{
+					jAlert("内容不能为空。", "提醒");
+					return;
+				}
+				
+				var otherTitleList = new Array();
+				var i = 0;
+				$("input[name=other-knowledge-title]").each(function(){
+					var tmp = $(this).val();
+					if(tmp != null && tmp.trim().length > 0)
 					{
-						case RET_OK:
-							$("#knowledge-grid").trigger("reloadGrid");
-							$("#create-text-knowledge-dialog").dialog("close");
-							
-							break;
-						case RET_NO_RIGHT:
-						case RET_PARA_IS_ERROR:
-						default:
-							jAlert("提交的时候发生错误，请重试", "提醒");
-							break;
+						otherTitleList[i] = tmp;
+						i ++;
 					}
 				});
 				
-				putRequest.error(function(data){
-					jAlert("提交的时候发生网络故障，请稍后重试", "提醒");
+				// 获取当前所在节点的id
+				var selectedNode = $("#subject-tree").jstree("get_selected");
+				var subjectId = 0;
+				if(selectedNode != null && selectedNode.length > 0)
+				{
+					subjectId = selectedNode.attr("id");
+				}
+				else
+				{
+					// 选中第一个节点
+					$("#subject-tree").jstree("select_node",$("li#0"));
+				}
+				
+				// 提交内容到服务端
+				var result = KnowledgeController.createKnowledge({
+					$entity: {
+						knowledgeTitle: title,
+						knowledgeContent: content,
+						addSubjectId: subjectId,
+						otherKnowledgeTitleList: otherTitleList
+					}
 				});
+				
 
+				switch(result.retcode)
+				{
+					case RET_OK:
+						// 添加成功，重新数据表格数据
+						
+						$("#title-grid").trigger("reloadGrid");
+						$("#create-text-knowledge-dialog").dialog("close");
+						
+						break;
+					case RET_NO_RIGHT:
+					case RET_PARA_IS_ERROR:
+					default:
+						jAlert("提交的时候发生错误，请重试", "提醒");
+						break;
+				}
 			},
 			"放弃" : function() {
 				$(this).dialog("close");
@@ -118,8 +167,10 @@ $(function(){
 		}
 		else
 		{
-			jAlert("您没有选中任何的知识分类。", "提醒");
-			return;
+			// jAlert("您没有选中任何的知识分类。", "提醒");
+			// return;
+			// 默认选中跟类别
+			
 		}
 		$("#add-subject-id").val(currentSubjectId);
 		
@@ -156,7 +207,7 @@ $(function(){
 	})
 	.click(function(event)
 	{
-		var tmpTitle = $("#other-knowledge-title").clone();
+		var tmpTitle = $("input[name=other-knowledge-title]").clone();
 		tmpTitle.val("");
 		tmpTitle.appendTo("#other-knowledge-title-panel");
 		return false;

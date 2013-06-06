@@ -2,7 +2,6 @@ package passion.app.kms.manager.controller;
 
 import java.util.List;
 
-import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DELETE;
@@ -14,7 +13,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.jboss.resteasy.annotations.Form;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -91,8 +89,9 @@ public class SubjectController
 	@Path("/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public ResultBean udpateSubjectName(HttpSession session, @PathParam("id") long id,
-													  @Form String subjectName)
+	public ResultBean updateSubjectName(@PathParam("id") long id,
+										 String subjectName,
+										 @CookieParam("username") String username)
 	{
 		ResultBean result = new ResultBean(ErrorCode.OK);
 		
@@ -106,15 +105,8 @@ public class SubjectController
 		
 		// 检查此条记录是否是当前用户的
 		// 取出用户ID
-		long userId = 0;
-		try
-		{
-			userId =  (long) session.getAttribute("userId");
-		} catch (Exception e)
-		{
-			result.setRetcode(ErrorCode.PARA_IS_ERROR);
-			return result;
-		}
+		long userId = UserData.getBindId(username);
+		
 		if(subjectMapper.checkSubjectOwner(id, userId) == 0)
 		{
 			result.setRetcode(ErrorCode.NO_RIGHT);
@@ -146,23 +138,14 @@ public class SubjectController
 	 */
 	@DELETE
 	@Path("/{id}")
-	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public ResultBean deleteSubjectById(HttpSession session, @PathParam("id") long id)
+	public ResultBean deleteSubjectById(@PathParam("id") long id, @CookieParam("username") String username)
 	{
 		ResultBean result = new ResultBean(ErrorCode.OK);
 
 		// 检查记录是否属于当前用户
 		// 取出用户ID
-		long userId = 0;
-		try
-		{
-			userId =  (long) session.getAttribute("userId");
-		} catch (Exception e)
-		{
-			result.setRetcode(ErrorCode.PARA_IS_ERROR);
-			return result;
-		}
+		long userId = UserData.getBindId(username);
 		
 		SubjectBean checkSubject = subjectMapper.readSubjectById(id);
 		if (checkSubject == null)

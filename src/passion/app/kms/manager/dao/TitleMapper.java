@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -22,14 +23,14 @@ public interface TitleMapper
 	 * @return 标题内容
 	 */
 	@Select("select * from kms_title where id = #{id}")
-	public TitleBean readTitleById(long id);
+	public TitleBean readTitleById(@Param("id") long id);
 	
 	/**
 	 * 创建一条标题行
 	 * @param title 标题
 	 * @return 影响行数
 	 */
-	@Insert("insert into kms_title(type, name, knowledgeId, subjectId, updateDate) values(#{type}, #{name}, #{knowledgeId}, #{subjectId}, #{updateDate})")
+	@Insert("insert into kms_title(type, name, knowledgeId, subjectId, updateDate, userId) values(#{type}, #{name}, #{knowledgeId}, #{subjectId}, #{updateDate}, #{userId})")
 	@Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
 	public int createTitile(TitleBean title);
 	
@@ -39,7 +40,7 @@ public interface TitleMapper
 	 * @return 影响行数
 	 */
 	@Update("update kms_title set deleteFlag = 1 where id = #{id}")
-	public int updateTitleDeleteFlag(long id);
+	public int updateTitleDeleteFlag(@Param("id") long id);
 	
 	/**
 	 * 设置重新索引标识
@@ -47,7 +48,7 @@ public interface TitleMapper
 	 * @return 影响行数
 	 */
 	@Update("update kms_title set indexSatus = #{indexStatus} where id = #{id}")
-	public int updateTitleIndexStatus(long id, int indexStatus);
+	public int updateTitleIndexStatus(@Param("id") long id, @Param("indexStatus") int indexStatus);
 	
 	/**
 	 * 更新标题内容
@@ -64,11 +65,45 @@ public interface TitleMapper
 	 * @return
 	 */
 	@Select("select count(*) from kms_subject s, kms_title t where t.id = #{titleId} and t.subjectId = s.id and s.userId = #{userId}")
-	public int checkTitleOwner(long titleId, long userId);
+	public int checkTitleOwner(@Param("titleId") long titleId, @Param("userId") long userId);
 	
-	@Select("select * from kms_title ")
-	public List<TitleBean> getTitleList(long page, long rows, long subjectId, long userId);
+	/**
+	 * 获取某一个知识分类下面的知识内容
+	 * @param startPosition 起始位置，以0为起点
+	 * @param rows 需要返回的数据的最大行数
+	 * @param subjectId 知识分类的ID
+	 * @param userId 所属用户的ID
+	 * @return 数据集
+	 */
+	@Select("select * from kms_title where userId = #{userId} and deleteFlag = 0 and type = 1 and subjectId = #{subjectId} order by updateDate desc limit #{startPosition}, #{rows}")
+	public List<TitleBean> getTitleList(@Param("startPosition") long startPosition, @Param("rows") long rows, 
+										 @Param("subjectId") long subjectId, @Param("userId") long userId);
 	
-	@Select("select * from kms_title")
-	public List<TitleBean> getAllTitleList(long page, long rows, long userId);
+	/**
+	 * 获取某一个知识分类下面的知识数量
+	 * @param subjectId
+	 * @param userId
+	 * @return 知识数量
+	 */
+	@Select("select count(*) from kms_title where userId = #{userId} and deleteFlag = 0 and type = 1 and subjectId = #{subjectId}")
+	public long getTitleListCount(@Param("subjectId") long subjectId, @Param("userId") long userId);
+	
+	/**
+	 * 获得用户下面所有数据列表
+	 * @param startPosition 起始位置，以0为起点
+	 * @param rows 需要返回的数据的最大行数
+	 * @param userId 所属用户的ID
+	 * @return 数据集
+	 */
+	@Select("select * from kms_title where userId = #{userId} and deleteFlag = 0 and type = 1 order by updateDate desc limit #{startPosition}, #{rows}")
+	public List<TitleBean> getAllTitleList(@Param("startPosition") long startPosition, @Param("rows") long rows,
+											@Param("userId") long userId);
+	
+	/**
+	 * 获得某用户下面知识的数量
+	 * @param userId 用户ID
+	 * @return 知识数量
+	 */
+	@Select("select count(*) from kms_title where userId = #{userId} and deleteFlag = 0 and type = 1")
+	public long getAllTitleListCount(@Param("userId") long userId);
 }

@@ -103,32 +103,24 @@
 				
 				
 				// 调用后台，保存到数据库
-				var subjectAddRequest = $.ajax({
-					type: "post",
-					url: "/kms/subject/" + currentSubjectId,
-					contentType: "application/json",
-					data: tmpSubjectName
+				var result = SubjectController.updateSubjectName({
+					id: currentSubjectId,
+					$entity: tmpSubjectName
 				});
-				
-				subjectAddRequest.success(function(data){
-					switch(data.retcode)
-					{
-					case RET_OK:
-						// 在树中修改节点
-						$("#subject-tree").jstree("set_text", $("#subject-tree").jstree("get_selected"), tmpSubjectName);
-						$("#rename-subject-dialog").dialog("close");
-						break;
-					case RET_DB_FAIL:
-					case RET_PARA_IS_ERROR:
-					default:
-						jAlert("重命名分类失败了，请重新尝试。", "提醒");
-						break;
-					}
-				});
-				subjectAddRequest.error(function(){
-					jAlert("网络发生错误，请重新尝试。", "错误");
-				});
-				
+
+				switch(result.retcode)
+				{
+				case RET_OK:
+					// 在树中修改节点
+					$("#subject-tree").jstree("set_text", $("#subject-tree").jstree("get_selected"), tmpSubjectName);
+					$("#rename-subject-dialog").dialog("close");
+					break;
+				case RET_DB_FAIL:
+				case RET_PARA_IS_ERROR:
+				default:
+					jAlert("重命名分类失败了，请重新尝试。", "提醒");
+					break;
+				}				
 				
 			},
 			"放弃": function()
@@ -188,33 +180,21 @@ $(function() {
 				return;
 			}
 			// 向服务器发起删除请求
-			var deleteRequest = $.ajax({
-				type: "delete",
-				url: "/kms/subject/" + currentSubjectId
-			});
-			deleteRequest.success(function(data)
-			{
-				switch(data.retcode)
-				{
-				case RET_OK:
-					// 界面上面删除
-					$("#subject-tree").jstree("remove");
-					break;
-				case RET_PARA_IS_ERROR:
-				case RET_DB_FAIL:
-				case RET_NO_RIGHT:
-				default:
-					jAlert("删除分类失败，请重试。", "提醒");
-					break;
-				}
-			});
 			
-			deleteRequest.error(function(data)
+			var result = SubjectController.deleteSubjectById({id: currentSubjectId});
+			switch(result.retcode)
 			{
-				jAlert("网络发生错误，请重新尝试", "错误");
-			});
-
-			
+			case RET_OK:
+				// 界面上面删除
+				$("#subject-tree").jstree("remove");
+				break;
+			case RET_PARA_IS_ERROR:
+			case RET_DB_FAIL:
+			case RET_NO_RIGHT:
+			default:
+				jAlert("删除分类失败，请重试。", "提醒");
+				break;
+			}
 		});
 
 	});
@@ -240,10 +220,19 @@ $(function(){
 		 // 单击事件处理
 		 
 		 // 获得到点击的节点的ID编号
-		 // var currentSubjectId = data.rslt.obj.attr("id");
-		 //alert(currentSubjectId);
+		 var currentSubjectId = data.rslt.obj.attr("id");
 		 
+		 var currentSubjectName = "所有知识";
+		 if(currentSubjectId != "0")
+		 { 
+			 currentSubjectName = "知识分类: "+ $("#subject-tree").jstree("get_text", $("#subject-tree").jstree("get_selected"));
+		 }
 		 
+		 // 刷新右边的知识列表
+		 $("#title-grid").jqGrid('setGridParam', {url:"/kms/rest/knowledge/title/"+currentSubjectId, page:1});
+		 $("#title-grid").jqGrid('setCaption', currentSubjectName)
+		 .trigger('reloadGrid');
+	 
 	 });
 });
 
