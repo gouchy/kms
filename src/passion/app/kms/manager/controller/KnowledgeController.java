@@ -7,7 +7,9 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -53,7 +55,7 @@ public class KnowledgeController
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/title/{id}")
+	@Path("/subject/{id}")
 	public ResultBean getTitleList(@PathParam("id") long id, 
 									@QueryParam("rows") long rows,
 									@QueryParam("page") long page,
@@ -139,7 +141,7 @@ public class KnowledgeController
 		TitleBean titleBean = new TitleBean();
 		titleBean.setType(TitleBean.TYPE_TITLE_MAIN); // main topic
 		titleBean.setName(knowledge.getKnowledgeTitle());
-		titleBean.setIndexStatus(TitleBean.INDEX_NOT_ADD); // not index
+		// titleBean.setIndexStatus(TitleBean.INDEX_NOT_ADD); // not index
 		titleBean.setDeleteFlag(0); // not deleted
 		titleBean.setUpdateDate(new Date());
 		titleBean.setKnowledgeId(knowledgeBean.getId());
@@ -166,7 +168,7 @@ public class KnowledgeController
 			TitleBean otherTitleBean = new TitleBean();
 			otherTitleBean.setType(TitleBean.TYPE_TITLE_OTHER); // main topic
 			otherTitleBean.setName(otherTitle);
-			otherTitleBean.setIndexStatus(TitleBean.INDEX_NOT_ADD); // not index
+			//otherTitleBean.setIndexStatus(TitleBean.INDEX_NOT_ADD); // not index
 			otherTitleBean.setDeleteFlag(0); // not deleted
 			otherTitleBean.setUpdateDate(new Date());
 			otherTitleBean.setKnowledgeId(knowledgeBean.getId());
@@ -182,6 +184,167 @@ public class KnowledgeController
 			//SolrOperator.addTitle(otherTitleBean);
 		}
 		
+		return result;
+	}
+	
+	/**
+	 * 根据主标题的ID删除整条知识
+	 * 注：知识的删除，并不是正式的删除，有很多仅仅是标记内容
+	 * @param id 主标题的id
+	 * @param username 当前用户登录的名称
+	 * @return
+	 */
+	@DELETE
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/title/{id}")
+	public ResultBean deleteKnowledgeByTitleId(@PathParam("id") long id,@CookieParam("username") String username)
+	{
+		ResultBean result = new ResultBean(ErrorCode.OK);
+		
+		// 检查当前主标题是否归属于该用户
+		long userId = UserData.getBindId(username);
+		if (titleMapper.checkTitleOwner(id, userId) == 0)
+		{
+			result.setRetcode(ErrorCode.NO_RIGHT);
+			return result;
+		}
+
+		// 置知识内容为无效
+		TitleBean title = titleMapper.readTitleById(id);
+		knowledgeMapper.updateKnowledgeDeleteFlag(title.getKnowledgeId());
+		
+		// 置主标题为无效
+		titleMapper.updateTitleDeleteFlag(id);
+		
+		// 取出副标题，并且将这些副标题置为无效
+		titleMapper.updateOtherTitleDeleteFlagByKnowledgeId(title.getKnowledgeId());
+		
+		return result;
+	}
+	
+	/**
+	 * 根据知识的编号ID，获取知识的相关内容信息
+	 * @param id 知识id
+	 * @param username 登录用户名
+	 * @return 知识内容
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/{id}")
+	public ResultBean getKnowledgeById(@PathParam("id") long id, @CookieParam("username") String username)
+	{
+		ResultBean result = new ResultBean(ErrorCode.OK);
+		
+		long userId = UserData.getBindId(username);
+		if (knowledgeMapper.checkKnowledgeOwer(id, userId) == 0)
+		{
+			result.setRetcode(ErrorCode.NO_RIGHT);
+			return result;
+		}
+		
+		KnowledgeBean knowledge = knowledgeMapper.readKnowledgeById(id);		
+		result.addEntry("knowledge", knowledge);
+		
+		return result;
+	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/title/{id}")
+	public ResultBean getKnowledgeByTitleId(@PathParam("id") long titleId, @CookieParam("username") String username)
+	{
+		ResultBean result = new ResultBean(ErrorCode.OK);
+		
+		long userId = UserData.getBindId(username);
+		if (titleMapper.checkTitleOwner(titleId, userId) == 0)
+		{
+			result.setRetcode(ErrorCode.NO_RIGHT);
+			return result;
+		}
+		
+		TitleBean mainTitle = titleMapper.readTitleById(titleId);
+		if(mainTitle == null)
+		{
+			result.setRetcode(ErrorCode.PARA_IS_ERROR);
+			return result;
+		}
+		result.addEntry("mainTitle", mainTitle);
+		
+		List<TitleBean> otherTitleList = titleMapper.getOtherTitleByKnowledgeId(mainTitle.getKnowledgeId());
+		result.addEntry("otherTitle", otherTitleList);		
+		
+		KnowledgeBean knowledge = knowledgeMapper.readKnowledgeById(mainTitle.getKnowledgeId());		
+		result.addEntry("knowledge", knowledge);
+		
+		return result;
+	}
+	
+	/**
+	 * 更新知识的信息
+	 * @param knowledgeId 知识的ID
+	 * @param knowledge 知识的内容信息
+	 * @param username 操作者的用户名
+	 * @return 操作结果
+	 */
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("/title/{id}")
+	public ResultBean updateKnowledge(@PathParam("id") long titleId, 
+									   KnowledgeParam knowledge, 
+									   @CookieParam("username") String username)
+	{
+		ResultBean result = new ResultBean(ErrorCode.OK);
+		
+		// 检查当前用户是否有操作这条记录的权限
+		long userId = UserData.getBindId(username);
+		if(titleMapper.checkTitleOwner(titleId, userId) == 0)
+		{
+			result.setRetcode(ErrorCode.NO_RIGHT);
+			return result;
+		}
+		
+		// 从数据库中查询到这个记录的结构
+		TitleBean dbMainTitle = titleMapper.readTitleById(titleId);
+		KnowledgeBean dbKnowledge = knowledgeMapper.readKnowledgeById(dbMainTitle.getKnowledgeId());
+		//List<TitleBean> dbOtherTitleList = titleMapper.getOtherTitleByKnowledgeId(knowledgeId);
+		
+		// 更新相关字段
+		dbKnowledge.setContent(knowledge.getKnowledgeContent());		
+		knowledgeMapper.updateKnowledge(dbKnowledge);
+		
+		dbMainTitle.setName(knowledge.getKnowledgeTitle());
+		dbMainTitle.setUpdateDate(new Date());
+		titleMapper.updateTitle(dbMainTitle);
+		
+		titleMapper.updateOtherTitleDeleteFlagByKnowledgeId(dbMainTitle.getKnowledgeId());
+		
+		// other title
+		for (String otherTitle : knowledge.getOtherKnowledgeTitleList())
+		{
+			// Ignore null string
+			if (otherTitle == null || otherTitle.trim().equals(""))
+			{
+				continue;
+			}
+			TitleBean otherTitleBean = new TitleBean();
+			otherTitleBean.setType(TitleBean.TYPE_TITLE_OTHER); // main topic
+			otherTitleBean.setName(otherTitle);
+			// otherTitleBean.setIndexStatus(TitleBean.INDEX_NOT_ADD); // not
+			// index
+			otherTitleBean.setDeleteFlag(0); // not deleted
+			otherTitleBean.setUpdateDate(new Date());
+			otherTitleBean.setKnowledgeId(dbMainTitle.getKnowledgeId());
+			otherTitleBean.setSubjectId(dbMainTitle.getSubjectId());
+			otherTitleBean.setUserId(userId);
+
+			if (0 == titleMapper.createTitile(otherTitleBean))
+			{
+				result.setRetcode(ErrorCode.DB_FAIL);
+				return result;
+			}
+
+		}
 		return result;
 	}
 }

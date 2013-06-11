@@ -14,12 +14,26 @@ public class TitleBean {
 	public final static int TYPE_TITLE_MAIN= 1;
 	public final static int TYPE_TITLE_OTHER = 2;
 	
+	/**
+	 * 已被索引
+	 */
 	public final static int INDEX_STATUS_OK = 0;
-	public final static int INDEX_NOT_ADD = 1;
-	public final static int INDEX_NOT_UPDATE = 2;
-	public final static int INDEX_NOT_DELETE = 3;
-	public final static int INDEX_DELETE = 4;
 	
+	/**
+	 * 未被索引 
+	 */
+	public final static int NOT_INDEX = 1;
+	
+	/**
+	 * 已被索引，但索引后内容有更新
+	 */
+	public final static int INDEX_BUT_UPDATE = 2;
+	
+	/**
+	 * 已被索引，但索引后内容已被设置删除标记
+	 */
+	public final static int INDEX_BUT_DELETE = 3;
+
 	/**
 	 * 数据库中的编号
 	 */

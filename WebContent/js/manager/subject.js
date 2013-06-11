@@ -229,7 +229,7 @@ $(function(){
 		 }
 		 
 		 // 刷新右边的知识列表
-		 $("#title-grid").jqGrid('setGridParam', {url:"/kms/rest/knowledge/title/"+currentSubjectId, page:1});
+		 $("#title-grid").jqGrid('setGridParam', {url:"/kms/rest/knowledge/subject/"+currentSubjectId, page:1});
 		 $("#title-grid").jqGrid('setCaption', currentSubjectName)
 		 .trigger('reloadGrid');
 	 

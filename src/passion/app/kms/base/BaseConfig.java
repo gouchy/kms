@@ -27,5 +27,5 @@ public class BaseConfig {
 	/**
 	 * Solr服务器的地址
 	 */
-	public static String SOLR_ADDRESS = "http://localhost:8084/solr";
+	public static String SOLR_ADDRESS = "http://127.0.0.1:8983/solr/kms";
 }

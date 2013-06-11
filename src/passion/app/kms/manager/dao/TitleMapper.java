@@ -39,7 +39,7 @@ public interface TitleMapper
 	 * @param id 知识标题Id
 	 * @return 影响行数
 	 */
-	@Update("update kms_title set deleteFlag = 1 where id = #{id}")
+	@Update("update kms_title set deleteFlag = 1, indexStatus = 3 where id = #{id}")
 	public int updateTitleDeleteFlag(@Param("id") long id);
 	
 	/**
@@ -47,7 +47,7 @@ public interface TitleMapper
 	 * @param id 知识标题
 	 * @return 影响行数
 	 */
-	@Update("update kms_title set indexSatus = #{indexStatus} where id = #{id}")
+	@Update("update kms_title set indexStatus = #{indexStatus} where id = #{id}")
 	public int updateTitleIndexStatus(@Param("id") long id, @Param("indexStatus") int indexStatus);
 	
 	/**
@@ -55,7 +55,7 @@ public interface TitleMapper
 	 * @param title 标题内容
 	 * @return 影响函数
 	 */
-	@Update("update kms_title set type = #{type}, name = #{name}, updateDate = #{updateDate} where id = #{id}")
+	@Update("update kms_title set type = #{type}, name = #{name}, updateDate = #{updateDate}, indexStatus = 2 where id = #{id}")
 	public int updateTitle(TitleBean title);
 	
 	/**
@@ -106,4 +106,36 @@ public interface TitleMapper
 	 */
 	@Select("select count(*) from kms_title where userId = #{userId} and deleteFlag = 0 and type = 1")
 	public long getAllTitleListCount(@Param("userId") long userId);
+	
+	/**
+	 * 获得某个知识的副标题
+	 * @param knowledgeId 知识ID
+	 * @return 副标题列表
+	 */
+	@Select("select * from kms_title where knowledgeId = #{knowledgeId} and type = 2 and deleteFlag = 0")
+	public List<TitleBean> getOtherTitleByKnowledgeId(@Param("knowledgeId") long knowledgeId);
+	
+	/**
+	 * 从数据库中获取知识主标题
+	 * @param knowledgeId 知识ID
+	 * @return 返回知识主标题
+	 */
+	@Select("select * from kms_title where knowledgeId = #{knowledgeId} and type = 1 and deleteFlag = 0 limit 0,1")
+	public TitleBean getMainTitleByKnowledgeId(@Param("knowledgeId") long knowledgeId);
+	
+	/**
+	 * 置某一个知识的副标题为删除标记
+	 * 此处索引标记也需要设置为3，代表需要从索引中删除
+	 * @param knowledgeId 知识ID
+	 * @return 受影响的条数
+	 */
+	@Update("update kms_title set deleteFlag = 1, indexStatus = 3 where knowledgeId = #{knowledgeId} and type = 2 and deleteFlag = 0")
+	public int updateOtherTitleDeleteFlagByKnowledgeId(@Param("knowledgeId") long knowledgeId);
+	
+	/**
+	 * 
+	 * @return
+	 */
+	@Select("select * from kms_title where indexStatus <> 0")
+	public List<TitleBean> getNeedIndexTitle();
 }

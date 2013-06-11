@@ -39,5 +39,24 @@
 	<!-- 过滤器设置 -->
 	<bean id="tokenFilter" class="passion.app.kms.manager.util.TokenFilter">
 	</bean>
+	
+	
+	<!-- 定时器设置 -->
+	<bean id="indexTimer" class="passion.app.kms.manager.util.IndexTimer">
+	</bean>
+	<bean id="indexTimerTask" class="org.springframework.scheduling.timer.ScheduledTimerTask">
+		<property name="timerTask" ref="indexTimer" />
+		<property name="period">
+			<value>30000</value>
+		</property>
+	</bean>
+	
+	<bean id="timerFaoctory" class="org.springframework.scheduling.timer.TimerFactoryBean">
+		<property name="scheduledTimerTasks">
+			<list>
+				<ref bean="indexTimerTask"/>
+			</list>
+		</property>
+	</bean>
 
 </beans>

@@ -2,6 +2,7 @@ package passion.app.kms.manager.dao;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -46,5 +47,14 @@ public interface KnowledgeMapper
 	 */
 	@Update("update kms_knowledge set deleteFlag = 1 where id =#{id}")
 	public int updateKnowledgeDeleteFlag(long id);
+	
+	/**
+	 * 检查知识是否属于此用户
+	 * @param knowledgeId 知识编号
+	 * @param userId 用户ID
+	 * @return 符合数量
+	 */
+	@Select("select count(*) from kms_title where knowledgeId = #{knowledgeId} and type = 1 and deleteFlag = 0 and userId = #{userId}")
+	public int checkKnowledgeOwer(@Param("knowledgeId") long knowledgeId, @Param("userId") long userId);
 
 }
