@@ -2,16 +2,25 @@ package passion.app.kms.wechat.controller;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Date;
 
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -20,6 +29,11 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import passion.app.kms.base.BaseConfig;
+import passion.app.kms.base.operator.OssOperator;
+import passion.app.kms.base.operator.SolrOperator;
+import passion.app.kms.manager.bean.KnowledgeBean;
+import passion.app.kms.manager.dao.KnowledgeMapper;
 import passion.app.kms.wechat.bean.Message;
 
 /**
@@ -28,8 +42,12 @@ import passion.app.kms.wechat.bean.Message;
  *
  */
 @Controller
+@Path("/weixin")
 public class MessageController {
 	private static Logger log = LoggerFactory.getLogger(MessageController.class);
+	
+	@Autowired
+	private KnowledgeMapper knowledgeMapper;
 	
 	/**
 	 * 接收来自微信服务器的消息
@@ -37,19 +55,49 @@ public class MessageController {
 	 * @param account 发送的测试账号
 	 * @param xmlText 发送的微信内容
 	 * @return 跳转的jsp页面（消息类型所替代的xml）
+	 * @throws UnsupportedEncodingException 
+	 * @throws NoSuchAlgorithmException 
 	 */
-	public String message(Model model,
-									  String account,
-									   String xmlText)
+	@POST
+	@Path("/{account}")
+	@Produces("text/xml; charset=utf-8")
+	public String message(@PathParam("account") String account,
+						   @QueryParam("signature") String signature,
+						   @QueryParam("timestamp") String timestamp,
+						   @QueryParam("nonce") String nonce,
+						   String xmlText) throws UnsupportedEncodingException, NoSuchAlgorithmException
 	{
 		Message msg = null;
 		Message responseMsg = null;
+		
+		// 检查账号
+		String token = BaseConfig.WECHAT_ACCOUNT.get(account);
+		if( token == null)
+		{
+			return "error check token";
+		}			
+		String[] tmpSortStr = new String[]{token, timestamp, nonce};
+		Arrays.sort(tmpSortStr);
+		String tmpDestStr = tmpSortStr[0] + tmpSortStr[1] + tmpSortStr[2];
+		MessageDigest md = MessageDigest.getInstance("SHA1");
+		byte[] result = md.digest(tmpDestStr.getBytes());
+		StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < result.length; i++) {
+            sb.append(Integer.toString((result[i] & 0xff) + 0x100, 16).substring(1));
+        }
+        if (!sb.toString().equals(signature))
+        {       			
+        	return "error signature";
+        }
+        
+		// 存放信息到OSS
+		OssOperator.putMessage(account, xmlText);
+		
 		try {
 			msg = parseXml(xmlText);
 		} catch (SAXException | IOException | ParserConfigurationException e) {
 			log.error("receive a error xml content message.");
-			model.addAttribute("error_str", "receive a error xml content message.");
-			return "wechat/error";
+			return "receive a error xml content message.";
 		}
 		switch(msg.getMsgType())
 		{
@@ -71,44 +119,40 @@ public class MessageController {
 		default:
 			break;
 		}
-		if (responseMsg != null)
+		if (responseMsg == null)
 		{
-			model.addAttribute("fromUserName", responseMsg.getFromUserName());
-			model.addAttribute("toUserName", responseMsg.getToUserName());
-			model.addAttribute("msgType", responseMsg.getMsgType().toString());
-			model.addAttribute("content", responseMsg.getContent());
-			model.addAttribute("createTime", (long)(responseMsg.getCreateTime().getTime() / 1000));
-			model.addAttribute("picUrl", responseMsg.getPicUrl());
-			model.addAttribute("location_X", responseMsg.getLocation_X());
-			model.addAttribute("location_Y", responseMsg.getLocation_Y());
-			model.addAttribute("label", responseMsg.getLabel());
-			model.addAttribute("title", responseMsg.getTitle());
-			model.addAttribute("description", responseMsg.getDescription());
-			model.addAttribute("url", responseMsg.getUrl());
-			model.addAttribute("event", responseMsg.getEvent());
-			model.addAttribute("eventKey", responseMsg.getEventKey());
-			model.addAttribute("musicUrl", responseMsg.getMusicUrl());
-			model.addAttribute("hqMusicUrl", responseMsg.getHqMusicUrl());
-			// TODO:图消息消息需要添加
+			return "It doesn't have a response.";
 		}
-		else
-		{
-			model.addAttribute("error_str", "It doesn't have a response.");
-			return "wechat/error";
-		}
+		String response ="It doesn't support this message type";
 		if(responseMsg.getMsgType() == Message.WeChatMessageType.TEXT)
 		{
-			return "wechat/message-text";
+			response = "<xml>\r\n";
+			response += "<ToUserName><![CDATA[" + responseMsg.getToUserName() + "]]></ToUserName>\r\n";
+			response += "<FromUserName><![CDATA[" + responseMsg.getFromUserName() + "]]></FromUserName>\r\n";
+			response += "<CreateTime>" + Long.toString(responseMsg.getCreateTime().getTime()) + "</CreateTime>\r\n";
+			response += "<MsgType><![CDATA[text]]></MsgType>\r\n";
+			response += "<Content><![CDATA[" + responseMsg.getContent() + "]]></Content>\r\n";
+			response += "<FuncFlag>0</FuncFlag>\r\n";
+			response += "</xml>\r\n";
 		}
 		else if(responseMsg.getMsgType() == Message.WeChatMessageType.MUSIC)
 		{
-			return "wechat/message-music";
+			response = "<xml>\r\n";
+			response += "<ToUserName><![CDATA[" + responseMsg.getToUserName() + "]]></ToUserName>\r\n";
+			response += "<FromUserName><![CDATA[" + responseMsg.getFromUserName() + "]]></FromUserName>\r\n";
+			response += "<CreateTime>" + Long.toString(responseMsg.getCreateTime().getTime()) + "</CreateTime>\r\n";
+			response += "<MsgType><![CDATA[music]]></MsgType>\r\n";
+			response += "<Music>\r\n";
+			response += "<Title><![CDATA[" + responseMsg.getTitle() + "]]></Title>\r\n";
+			response += "<Description><![CDATA[" + responseMsg.getDescription() + "]]></Description>\r\n";
+			response += "<MusicUrl><![CDATA[" + responseMsg.getMusicUrl() + "]]></MusicUrl>\r\n";
+			response += "<HQMusicUrl><![CDATA[" + responseMsg.getHqMusicUrl() + "]]></HQMusicUrl>\r\n";
+			response += "</Music>\r\n";
+			response += "<FuncFlag>0</FuncFlag>\r\n";
+			response += "</xml>\r\n";
 		}
-		else
-		{
-			model.addAttribute("error_str", "It doesn't support this message type");
-			return "wechat/error";
-		}
+
+		return response;
 	}
 	
 	/**
@@ -125,6 +169,17 @@ public class MessageController {
 		responseMsg.setCreateTime(new Date());
 		responseMsg.setMsgType(Message.WeChatMessageType.TEXT);
 		responseMsg.setContent("test");
+		
+		long knowledgeId = SolrOperator.queryKnowledge(msg.getContent());
+		if(knowledgeId == 0)
+		{
+			responseMsg.setContent("Sorry, we can't find you wanted.");
+		}
+		else
+		{
+			KnowledgeBean knowledge = knowledgeMapper.readKnowledgeById(knowledgeId);
+			responseMsg.setContent(knowledge.getContent());
+		}
 		
 		return responseMsg;
 	}

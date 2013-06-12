@@ -65,4 +65,10 @@
     	<filter-name>tokenFilter</filter-name>
     	<url-pattern>/rest/*</url-pattern>
     </filter-mapping>
+    
+    <!-- ******************* System Init ********************** -->
+	<listener>
+		<listener-class>passion.app.kms.base.SystemInitListener</listener-class>
+	</listener>
+	
 </web-app>

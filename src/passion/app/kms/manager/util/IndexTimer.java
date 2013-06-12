@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import passion.app.kms.base.operator.SolrOperator;
 import passion.app.kms.manager.bean.TitleBean;
 import passion.app.kms.manager.dao.TitleMapper;
 

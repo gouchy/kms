@@ -50,6 +50,19 @@ public class TokenFilter implements Filter
 			chain.doFilter(request, response);
 			return;
 		}
+		// 跳过weixin
+		if(httpRequest.getPathInfo().toLowerCase().indexOf("/weixin") >= 0)
+		{
+			chain.doFilter(request, response);
+			return;
+		}
+		
+		if(cookieList == null)
+		{
+			// 返回403
+			writeResponseNoRight(response, "No Right.");
+			return;
+		}
 		
 		for(Cookie cookie : cookieList)
 		{

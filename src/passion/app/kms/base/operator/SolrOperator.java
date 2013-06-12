@@ -1,4 +1,4 @@
-package passion.app.kms.manager.util;
+package passion.app.kms.base.operator;
 
 import java.io.IOException;
 
@@ -13,7 +13,8 @@ import org.apache.solr.common.SolrInputDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import passion.app.kms.base.BaseConfig;
+import passion.app.kms.base.config.ConfigList;
+import passion.app.kms.base.config.ConfigProperties;
 import passion.app.kms.manager.bean.TitleBean;
 
 /**
@@ -43,7 +44,7 @@ public class SolrOperator
 	{
 		if(querySolrServer == null)
 		{
-			querySolrServer = new HttpSolrServer(BaseConfig.SOLR_ADDRESS);
+			querySolrServer = new HttpSolrServer(ConfigProperties.getKey(ConfigList.BASIC, "SOLR_ADDRESS"));
 		}
 		return querySolrServer;
 	}
@@ -58,7 +59,7 @@ public class SolrOperator
 		{
 			// 第二个参数是发送给服务器前的缓存大小
 			// 第三个参数是后台服务线程数量
-			updateSolrServer = new ConcurrentUpdateSolrServer(BaseConfig.SOLR_ADDRESS, 10, 2);
+			updateSolrServer = new ConcurrentUpdateSolrServer(ConfigProperties.getKey(ConfigList.BASIC, "SOLR_ADDRESS"), 10, 2);
 		}
 		return updateSolrServer;
 	}
@@ -158,6 +159,36 @@ public class SolrOperator
 		}
 		
 		return true;
+	}
+	
+	public static long queryKnowledge(String question)
+	{
+		SolrQuery query = new SolrQuery();
+		question.replace("\"", "");
+		query.setQuery("title:\"" + question + "\"");
+		QueryResponse response;
+		try
+		{
+			response = getQuerySolrServer().query(query);
+		}
+		catch(SolrServerException e)
+		{
+			log.error(e.getMessage());
+			return 0;
+		}
+		SolrDocumentList docs = response.getResults();
+		if(docs == null || docs.size() == 0)
+		{
+			return 0;
+		}
+		
+		Long knowledgeId = (Long) docs.get(0).getFieldValue("knowledge_id");
+		
+		if(knowledgeId == null)
+		{
+			return 0;
+		}
+		return knowledgeId;
 	}
 	
 	public static boolean commit()

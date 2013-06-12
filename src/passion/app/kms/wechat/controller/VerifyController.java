@@ -4,10 +4,16 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 
 import passion.app.kms.base.BaseConfig;
 
@@ -17,6 +23,7 @@ import passion.app.kms.base.BaseConfig;
  *
  */
 @Controller
+@Path("/weixin/")
 public class VerifyController {
 	
 	private static Logger log = LoggerFactory.getLogger(VerifyController.class);
@@ -32,19 +39,21 @@ public class VerifyController {
 	 * @return 跳转的页面
 	 * @throws NoSuchAlgorithmException 异常
 	 */
-	public String verify(Model model,
-						   String account,
-						  String signature,
-						   String timestamp,
-						   String nonce,
-						  String echostr) throws NoSuchAlgorithmException {
+	@GET
+	@Path("/{account}")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String verify(@PathParam("account") String account,
+						  @QueryParam("signature") String signature,
+						  @QueryParam("timestamp") String timestamp,
+						  @QueryParam("nonce") String nonce,
+						  @QueryParam("echostr") String echostr) throws NoSuchAlgorithmException {
 		
 			log.info("Verify Request: signature:{}, timestamp:{}, nonce:{}, echostr:{}", new Object[]{signature, timestamp, nonce, echostr});
 			
 			String token = BaseConfig.WECHAT_ACCOUNT.get(account);
 			if( token == null)
 			{
-				model.addAttribute("echostr", "error-account");
+				return "error check token";
 			}			
 			String[] tmpSortStr = new String[]{token, timestamp, nonce};
 			Arrays.sort(tmpSortStr);
@@ -55,15 +64,11 @@ public class VerifyController {
 	        for (int i = 0; i < result.length; i++) {
 	            sb.append(Integer.toString((result[i] & 0xff) + 0x100, 16).substring(1));
 	        }
-	        if (sb.toString().equals(signature))
+	        if (!sb.toString().equals(signature))
 	        {       			
-	        	model.addAttribute("echostr", echostr);	
-	        }
-	        else
-	        {
-	        	model.addAttribute("echostr", "error-check");
+	        	return "error signature";
 	        }
 	        
-		return "wechat/verify";
+		return echostr;
 	}
 }

@@ -34,6 +34,7 @@
 	<!-- 扫描所有的Controller到Spring容器中 -->
 	<context:component-scan base-package="passion.app.kms" use-default-filters="false">
 		<context:include-filter type="regex" expression="passion.app.kms.manager.controller.*"/>
+		<context:include-filter type="regex" expression="passion.app.kms.wechat.controller.*" />
 	</context:component-scan>
 
 	<!-- 过滤器设置 -->
@@ -47,6 +48,9 @@
 	<bean id="indexTimerTask" class="org.springframework.scheduling.timer.ScheduledTimerTask">
 		<property name="timerTask" ref="indexTimer" />
 		<property name="period">
+			<value>30000</value>
+		</property>
+		<property name="delay">
 			<value>30000</value>
 		</property>
 	</bean>
