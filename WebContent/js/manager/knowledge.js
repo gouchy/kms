@@ -8,7 +8,8 @@
 		jsonReader: {
 			root: "value.rows",
 			page: "value.page",
-			records: "value.records"			
+			records: "value.records",
+			total: "value.total"
 		},
 		colNames: ["编号", "内容类型", "更新日期"],
 		colModel:[
@@ -22,8 +23,8 @@
 					}
 			}
 		],
-		rowNum: 15,
-		rowList: [10, 20, 30],
+		rowNum: 35,
+		rowList: [15, 25, 35, 45, 55,100],
 		pager: "#title-grid-pager",
 		sortname: "updateDate",
 		viewrecords: true,
