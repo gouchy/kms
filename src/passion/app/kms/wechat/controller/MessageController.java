@@ -29,11 +29,12 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import passion.app.kms.base.BaseConfig;
 import passion.app.kms.base.operator.OssOperator;
 import passion.app.kms.base.operator.SolrOperator;
 import passion.app.kms.manager.bean.KnowledgeBean;
+import passion.app.kms.manager.bean.UserBean;
 import passion.app.kms.manager.dao.KnowledgeMapper;
+import passion.app.kms.manager.dao.UserMapper;
 import passion.app.kms.wechat.bean.Message;
 
 /**
@@ -48,6 +49,9 @@ public class MessageController {
 	
 	@Autowired
 	private KnowledgeMapper knowledgeMapper;
+	
+	@Autowired
+	private UserMapper userMapper;
 	
 	/**
 	 * 接收来自微信服务器的消息
@@ -71,7 +75,8 @@ public class MessageController {
 		Message responseMsg = null;
 		
 		// 检查账号
-		String token = BaseConfig.WECHAT_ACCOUNT.get(account);
+		UserBean user = userMapper.readUserByUsername(account);		
+		String token = user.getToken();		
 		if( token == null)
 		{
 			return "error check token";
@@ -89,9 +94,6 @@ public class MessageController {
         {       			
         	return "error signature";
         }
-        
-		// 存放信息到OSS
-		OssOperator.putMessage(account, xmlText);
 		
 		try {
 			msg = parseXml(xmlText);
@@ -102,7 +104,7 @@ public class MessageController {
 		switch(msg.getMsgType())
 		{
 		case TEXT:
-			responseMsg = reponseText(msg);
+			responseMsg = reponseText(user, msg);
 			break;
 		case EVENT:
 			break;
@@ -151,7 +153,10 @@ public class MessageController {
 			response += "<FuncFlag>0</FuncFlag>\r\n";
 			response += "</xml>\r\n";
 		}
-
+		
+		// 存放信息到OSS
+		OssOperator.putMessage(account, xmlText, responseMsg.isHaveAnswer());
+		
 		return response;
 	}
 	
@@ -160,7 +165,7 @@ public class MessageController {
 	 * @param msg
 	 * @return
 	 */
-	private Message reponseText(Message msg)
+	private Message reponseText(UserBean user, Message msg)
 	{
 		log.info(msg.getContent());
 		Message responseMsg = new Message();
@@ -170,15 +175,17 @@ public class MessageController {
 		responseMsg.setMsgType(Message.WeChatMessageType.TEXT);
 		responseMsg.setContent("test");
 		
-		long knowledgeId = SolrOperator.queryKnowledge(msg.getContent());
+		long knowledgeId = SolrOperator.queryKnowledge(user.getId(), msg.getContent());
 		if(knowledgeId == 0)
 		{
 			responseMsg.setContent("Sorry, we can't find you wanted.");
+			responseMsg.setHaveAnswer(false);
 		}
 		else
 		{
 			KnowledgeBean knowledge = knowledgeMapper.readKnowledgeById(knowledgeId);
 			responseMsg.setContent(knowledge.getContent());
+			responseMsg.setHaveAnswer(true);
 		}
 		
 		return responseMsg;

@@ -17,26 +17,43 @@ public class OssOperator
 			ConfigProperties.getKey(ConfigList.BASIC, "OSS_ACCESS_KEY"),
 			ConfigProperties.getKey(ConfigList.BASIC, "OSS_ACCESS_SECRET"));
 	
-	public static boolean putMessage(String account, String xmlStr)
+	public static boolean putMessage(String account, String xmlStr, boolean haveAnswer)
 	{
-		if(!client.doesBucketExist(account))
-		{
-			client.createBucket(account);
-		}
+//		if(!client.doesBucketExist(account))
+//		{
+//			client.createBucket(account);
+//		}
 		
 		InputStream in = new ByteArrayInputStream(xmlStr.getBytes());
 		ObjectMetadata meta = new ObjectMetadata();
+//		if(haveAnswer)
+//		{
+//			meta.addUserMetadata("haveAnswer", "yes");
+//		}
+//		else
+//		{
+//			meta.addUserMetadata("haveAnswer", "no");
+//		}
 		meta.setContentLength(xmlStr.getBytes().length);
 		meta.setContentType("text/xml");
 		
-		client.putObject(account, UUID.randomUUID().toString(), in, meta);
+		if(haveAnswer)
+		{
+			meta.addUserMetadata("x-oss-meta-haveanswer", "yes");
+			client.putObject(ConfigProperties.getKey(ConfigList.BASIC, "OSS_BUCKET_NAME"), account + "/answer/" +UUID.randomUUID().toString(), in, meta);
+		}
+		else
+		{
+			meta.addUserMetadata("x-oss-meta-haveanswer", "no");
+			client.putObject(ConfigProperties.getKey(ConfigList.BASIC, "OSS_BUCKET_NAME"), account + "/noanswer/" +UUID.randomUUID().toString(), in, meta);
+		}
 		
 		return true;
 	}
 	
 	public static void main(String[] args)
 	{
-		putMessage("51talking", "<xml><a>abc</a></xml>");
+		//putMessage("51talking", "<xml><a>abc</a></xml>");
 
 	}
 }

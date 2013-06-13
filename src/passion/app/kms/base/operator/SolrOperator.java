@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.impl.ConcurrentUpdateSolrServer;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -75,6 +76,7 @@ public class SolrOperator
 	{
 		SolrInputDocument document = new SolrInputDocument();
 		document.addField("id", title.getId());
+		document.addField("user_id", title.getUserId());
 		document.addField("knowledge_id", title.getKnowledgeId());
 		document.addField("title", title.getName());
 		
@@ -119,6 +121,7 @@ public class SolrOperator
 	{
 		SolrInputDocument document = new SolrInputDocument();
 		document.addField("id", title.getId());
+		document.addField("user_id", title.getUserId());
 		document.addField("knowledge_id", title.getKnowledgeId());
 		document.addField("title", title.getName());
 		
@@ -161,11 +164,16 @@ public class SolrOperator
 		return true;
 	}
 	
-	public static long queryKnowledge(String question)
+	public static long queryKnowledge(long userId, String question)
 	{
 		SolrQuery query = new SolrQuery();
 		question.replace("\"", "");
-		query.setQuery("title:\"" + question + "\"");
+		query.setQuery("title:" + question + " AND user_id:" + Long.toString(userId));
+		query.setFields("score,knowledge_id,title");
+		query.setSort("score", ORDER.desc);
+		query.setStart(0);
+		query.setRows(2);
+		
 		QueryResponse response;
 		try
 		{

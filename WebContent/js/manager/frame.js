@@ -9,7 +9,7 @@
 	// 布局设置
 	var layout = $("body").layout({applyDefaultStyles: true,
 		west__onresize: $.layout.callbacks.resizePaneAccordions});
-	layout.sizePane("west", 300);
+	layout.sizePane("west", 380);
 	
 	// Accordion 设置
 	$("#left_panel").accordion({ heightStyle: "fill", fillSpace: true });

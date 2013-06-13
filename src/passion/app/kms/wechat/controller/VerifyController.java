@@ -13,9 +13,11 @@ import javax.ws.rs.core.MediaType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import passion.app.kms.base.BaseConfig;
+import passion.app.kms.manager.bean.UserBean;
+import passion.app.kms.manager.dao.UserMapper;
 
 /**
  * 用于微信的接入验证
@@ -28,6 +30,8 @@ public class VerifyController {
 	
 	private static Logger log = LoggerFactory.getLogger(VerifyController.class);
 	
+	@Autowired
+	private UserMapper userMapper;
 	/**
 	 * 校验来自微信服务器的签名
 	 * @param model 数据模型
@@ -50,7 +54,9 @@ public class VerifyController {
 		
 			log.info("Verify Request: signature:{}, timestamp:{}, nonce:{}, echostr:{}", new Object[]{signature, timestamp, nonce, echostr});
 			
-			String token = BaseConfig.WECHAT_ACCOUNT.get(account);
+			UserBean user = userMapper.readUserByUsername(account);		
+			String token = user.getToken();
+			
 			if( token == null)
 			{
 				return "error check token";

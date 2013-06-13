@@ -140,6 +140,7 @@
 $(function(){
 	 $("#createSubject").button().click(function(event)
 	 {
+		 $("#create-subject-name").val("");
 		 $("#create-subject-dialog").dialog("open");
 	 });
 });
@@ -205,6 +206,18 @@ $(function(){
 	 $("#renameSubject").button().click(function(event)
 	 {
 		 // 如果当前选中的是root-subject，则不允许修改
+		 var selectId = $("#subject-tree").jstree("get_selected").attr("id");
+		 if(selectId == undefined)
+		 {
+			 jAlert("请选择您需要重命名的分类。", "提醒");
+			 return;
+		 }
+		 if(selectId == "0")
+		 {
+			 jAlert("根分类不允许重命名。", "提醒");
+			 return;
+		 }
+		 
 		 var subjectName = $("#subject-tree").jstree("get_text", $("#subject-tree").jstree("get_selected"));
 		 $("#rename-subject-name").val(subjectName);
 		 $("#rename-subject-dialog").dialog("open");

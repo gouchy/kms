@@ -30,7 +30,7 @@
 		viewrecords: true,
 		sortorder: "desc",
 		caption: "所有知识",
-		height: window.screen.availHeight - 300,
+		height: window.innerHeight - 255,
 		/**
 		 * 当用户双机了某一行的时候，会出现这一行的详细知识信息内容
 		 * @param id

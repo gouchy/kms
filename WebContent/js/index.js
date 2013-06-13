@@ -57,3 +57,10 @@
 	});
  });
  
+ $(function() {
+	$("#register").button().click(function(event) {
+			
+	});
+ });
+
+ 

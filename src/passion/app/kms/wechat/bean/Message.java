@@ -124,6 +124,11 @@ public class Message {
 	 */
 	private String msgId;
 	
+	/**
+	 * 是否回答
+	 */
+	private boolean haveAnswer;
+	
 	public String getToUserName() {
 		return toUserName;
 	}
@@ -262,6 +267,16 @@ public class Message {
 
 	public void setMsgID(String msgId) {
 		this.msgId = msgId;
+	}
+
+	public boolean isHaveAnswer()
+	{
+		return haveAnswer;
+	}
+
+	public void setHaveAnswer(boolean haveAnswer)
+	{
+		this.haveAnswer = haveAnswer;
 	}
 
 
