@@ -13,7 +13,7 @@
 		},
 		colNames: ["编号", "内容类型", "更新日期"],
 		colModel:[
-			{name: "id", index: "id", width: 80, sortable: false},
+			{name: "id", index: "id", width: 80, sortable: false, align: "center"},
 			{name: "name", index: "name", width: 600, sortable: false },
 			{name: "updateDate", index: "updateDate desc", 
 					width: 150, align: "right", sortable: false,
