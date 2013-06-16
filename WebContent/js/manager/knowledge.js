@@ -30,7 +30,7 @@
 		viewrecords: true,
 		sortorder: "desc",
 		caption: "所有知识",
-		height: window.innerHeight - 255,
+		height: window.innerHeight - 200,
 		/**
 		 * 当用户双机了某一行的时候，会出现这一行的详细知识信息内容
 		 * @param id
@@ -69,7 +69,7 @@
  $(function() {
 	$("#create-text-knowledge-dialog").dialog({
 		autoOpen : false,
-		height : 600,
+		height : 450,
 		width : 650,
 		modal : true,
 		buttons : {
@@ -165,7 +165,7 @@
  $(function() {
 	$("#edit-text-knowledge-dialog").dialog({
 		autoOpen : false,
-		height : 600,
+		height : 450,
 		width : 650,
 		modal : true,
 		buttons : {
@@ -251,7 +251,7 @@
 $(function(){
 	$("#show-knowledge-dialog").dialog({
 		autoOpen: false,
-		height: 600,
+		height: 500,
 		width: 650,
 		modal: true,
 		buttons: {

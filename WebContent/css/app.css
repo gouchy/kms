@@ -20,7 +20,7 @@ body {
 }
 
 .footer {
-	height: 35px;
+	height: 40px;
 	/*background-color: #F1F1F1;*/
 }
 
@@ -34,7 +34,9 @@ body {
 	padding-top: 9px;
 }
 */
-
+a:link,a:visited {
+	text-decoration: none;
+}
 
 .footer ul li {
 	display: inline;
@@ -42,33 +44,62 @@ body {
 	color: #999999;
 }
 
+.floater {
+	height: 50%;
+	margin-bottom: -169px;
+}
 
-.maincontent {
-	width: 1200px;
+.login-title {
+	clear: both;
+	background: url(../images/51talking.gif);
+	width: 181px;
+	height: 39px;
 	margin-left: auto;
 	margin-right: auto;
-	background: #F00;
+}
+
+.maincontent {
+	width: 338px;
+	height: 210px;
+	margin-left: auto;
+	margin-right: auto;
+	background: #FFFFFF;
+	padding-left: 8px;
+	padding-top: 8px;
+}
+
+.mainarea {
+	background: #0099FF;
 }
 
 .login-area {
-	float: right;
-	width: 450px;
+	width: 329px;
+	height: 200px;
+	background: #FCFCFC;
+	border: 1px solid #999999;	
+}
+
+.login-font {
+	color: #666666;
 }
 
 .login-area-boxing {
-	margin-top: 12px;
-	border: 1px solid #E5E5E5;
-	background: #F1F1F1;
 	padding: 20px 25px 15px;
 }
 
 .login-input {
-	height: 2.0rem;
-	width: 350px;
+	height: 1.5 rem;
+	width: 250px;
+	border: 1px solid #666666;
+}
+
+.login-button {
+	width: 80px;
+	height: 30px;
 }
 
 .login-button-panel {
-	padding-left: 130px;
+	padding-left: 35px;
 }
 
 #signin {
@@ -78,6 +109,84 @@ body {
 .username-div, .password-div {
 	padding-bottom: 15px;
 }
+
+.resizer {
+	background: #FFFFFF;
+	border-top: 1px solid #666666;
+}
+
+.bottom-logo {
+	background: url('../images/bottom-title.gif') no-repeat;
+	width: 155px;
+	height: 40px;
+	float: left;
+	margin-top: 10px;
+}
+
+.bottomarea {
+	background: #FFFFFF;
+}
+
+.bottom-right {
+	padding-top: 30px;
+	float: right;
+	height: 15px;
+	widht: 120px;
+}
+
+.bottom-right span {
+	font-size: 0.75em;
+	color: #8C8C8C;
+	padding-right: 5px;
+}
+
+.header-left {
+	float: left;
+	width: 400px;
+	height: 30px;
+	font-size: 1.5em;
+	color: #FFFFFF;
+	padding-left: 20px;
+	padding-top: 5px;
+}
+.header-right {
+	height: 30px;
+	margin-top: 10px;
+	margin-right: 10px;
+	float: right;
+	font-size: 1em;
+	color: #FFFFF;
+}
+
+.exit-link-text {
+	color: #FFFFFF;
+	
+}
+
+.frame-resizer {
+	background: #fff !important;
+}
+
+.frame-resizer-north {
+	background: #0099CC !important;
+}
+
+.ui-layout-toggler-north {
+	background: #fff !important;
+	width: 0px !important;
+	height: 0px !important;
+}
+
+.ui-layout-toggler-west {
+	background: #0099CC !important;
+}
+
+#header-area {
+	background: #0099CC !important;
+	border: 0px !important;
+}
+
+
 
 .l-topmenu {
 	margin:0;
@@ -117,6 +226,7 @@ body {
 .form-input {
 	width: 95%;
 	margin-bottom: 12px;
+	border: 1px solid #0099CC;
 }
 
 label {
@@ -127,5 +237,26 @@ label {
 .small-icon-button {
 	width: 20px;
 	height: 20px;
+}
+
+fieldset {
+	border: 0px;
+}
+
+.subject-input {
+	border: 1px solid #0099CC;
+	width: 250px
+}
+
+.show-title {
+	border-bottom: 1px solid #0099CC;
+}
+
+.show-other-title {
+	padding-left: 20px;
+}
+
+.show-other-title li {
+	list-style-type: decimal;
 }
 

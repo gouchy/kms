@@ -6,9 +6,13 @@
  * 页面完成加载初始化
  */
  $(document).ready(function () {
+	 
+	 $("body").css("display", "");
+	 
 	// 布局设置
 	var layout = $("body").layout({applyDefaultStyles: true,
-		west__onresize: $.layout.callbacks.resizePaneAccordions});
+		west__onresize: $.layout.callbacks.resizePaneAccordions,
+		resizerClass: "frame-resizer"});
 	layout.sizePane("west", 380);
 	
 	// Accordion 设置
@@ -36,7 +40,18 @@
 		"plugins": ["themes", "json_data", "ui", "crrm"],
 	});
 
+	
  });
+ 
+ /**
+  * 点击退出按钮
+  */
+ $(function(){
+	 $("#exit-button").click(function(){
+		 window.location.href = "../index.html";
+	 });
+ });
+
  
 
  /**************************************************************************

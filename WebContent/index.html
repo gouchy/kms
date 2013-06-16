@@ -9,7 +9,7 @@
 <title>51Taling + Robot</title>
 <link type="text/css" rel="stylesheet" href="css/topcoat/css/topcoat-desktop-light.css" />
 <link type="text/css" rel="stylesheet" href="css/app.css" />
-<link type="text/css" rel="stylesheet" href="openjs/jqueryui/smoothness/jquery-ui-1.10.3.custom.css" />
+<link type="text/css" rel="stylesheet" href="openjs/jqueryui/cupertino/jquery-ui.min.css" />
 <link type="text/css" rel="stylesheet" href="openjs/jqueryalert/jquery.alerts.css" />
 
 
@@ -27,41 +27,48 @@
 
 <body>
 <!-- 头部 -->
+<!-- 
 <div class="ui-layout-north">
 	<div class="header">
 	</div>
 </div>
+ -->
 <!-- 底部 -->
-<div class="ui-layout-south">
+<div class="ui-layout-south bottomarea">
 	<div class="footer">
-		<ul>
-			<li>@ 2013 51talking.com</li>
-			<li></li>
-		</ul>
+		<div class="bottom-logo"></div>
+		<div class="bottom-right">
+			<span>Email: fly_chen@189.cn</span>
+		</div>
+
+
 	</div>
 </div>
 <!-- 主区域 -->
-<div class="ui-layout-center">
+<div class="ui-layout-center mainarea">
+	<div class="floater">
+	</div>
+	<div id="login_title" class="login-title">
+	</div>
 	<div id="login_center" class="maincontent">	
 		<div class="login-area">
-			<form id="login-form">
+			<form id="login-form" action="#">
 				<div class="login-area-boxing">
-					<h2>登录</h2>
 					<div class="username-div">
-						<label>
+						<label class="login-font">
 							<strong>用户名</strong>
 						</label>
-						<input id="username" type="text" class="login-input topcoat-text-input--large ">
+						<input id="username" type="text" class="login-input">
 					</div>
 					<div class="password-div">
-						<label>
+						<label class="login-font">
 							<strong>密码</strong>
 						</label>
-						<input id="password" type="password" class="topcoat-text-input--large login-input">
+						<input id="password" type="password" class="login-input">
 					</div>
 					<div class="login-button-panel">
-						<input id="signin" type="button" value="登录">
-						<input id="register" type="button" value="注册">
+						<input id="signin" type="submit" value="登录" class="login-button" style="background: #0099FF; color: #FFFFFF; font-size: 1em;">
+						<input id="register" type="button" value="注册" class="login-button" style="background: #0099FF; color: #FFFFFF; font-size: 1em;">
 					</div>
 				</div>
 			</form>

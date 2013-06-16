@@ -4,7 +4,7 @@
  $(function(){
 	$("#create-subject-dialog").dialog({
 		autoOpen: false,
-		height: 300,
+		height: 180,
 		width: 350,
 		modal: true,
 		buttons: {
@@ -70,7 +70,7 @@
  $(function(){
 	$("#rename-subject-dialog").dialog({
 		autoOpen: false,
-		height: 300,
+		height: 180,
 		width: 350,
 		modal: true,
 		buttons: {

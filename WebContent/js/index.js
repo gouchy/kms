@@ -2,7 +2,8 @@
  $(document).ready(function () {
 	// 布局设置
     $('body').layout({applyDefaultStyles: false,
-    	resizable: false});
+    	resizable: false,
+    	resizerClass: "resizer"});
  });
  
  /**

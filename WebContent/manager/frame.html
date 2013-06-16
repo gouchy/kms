@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<title>欢迎访问51Talking</title>
+<title>51Talking</title>
 <link type="text/css" rel="stylesheet" href="../css/app.css" />
-<link type="text/css" rel="stylesheet" href="../openjs/jqueryui/smoothness/jquery-ui-1.10.3.custom.css" />
+<link type="text/css" rel="stylesheet" href="../openjs/jqueryui/cupertino/jquery-ui.min.css" />
 <link type="text/css" rel="stylesheet" href="../openjs/jqueryalert/jquery.alerts.css" />
 <link type="text/css" rel="stylesheet" href="../openjs/jqgrid/css/ui.jqgrid.css" />
 
@@ -25,12 +25,16 @@
 
 <script type="text/javascript" src="../rest-js"></script>
 </head>
-<body>
+<body style="display:none">
 	<div id="header-area" class="ui-layout-north">
 		<div>
-			<div>微信自动回复管理系统</div>
-			<div>
-				 <a href="#" class="l-link2">退出</a>
+			<div class="header-left">
+				<span>微信公众平台问答助手</span>
+			</div>
+			<div class="header-right">
+				 <a id="exit-button" href="#" class="exit-link">
+				 	<span class="exit-link-text">退出</span>
+				 </a>
 			</div>
 		</div>
 	</div>
@@ -59,22 +63,25 @@
 		<table id="title-grid"></table>
 		<div id="title-grid-pager"></div>
 	</div>
+	
+	<!-- 
 	<div id="footer-area" class="ui-layout-south">
 		<div>Copyright © 2013 www.51talking.com</div>
 	</div>
+	-->
 	
 	<!-- 对话框类 -->
 	<div id="create-subject-dialog" title="创建新的知识分类">
 		<fieldset>
 			<label>分类名称</label>
-			<input id="create-subject-name" type="text">
+			<input id="create-subject-name" type="text" class="subject-input">
 		</fieldset>
 	</div>
 	
 	<div id="rename-subject-dialog" title="重命名知识分类">
 		<fieldset>
 			<label>分类名称</label>
-			<input id="rename-subject-name" type="text">
+			<input id="rename-subject-name" type="text" class="subject-input">
 		</fieldset>
 	</div>
 	
@@ -111,9 +118,10 @@
 	</div>
 	
 	<div id="show-knowledge-dialog" title="知识查看">
-		<h2 id="show-knowledge-title"></h2>
+		<h2 id="show-knowledge-title" class="show-title"></h2>
 		<pre id="show-knowledge-content"></pre>
-		<ul id="show-knowledge-other-title"></ul>
+		<h4 class="show-title">其它标题</h4>
+		<ul id="show-knowledge-other-title" class="show-other-title"></ul>
 	</div>
 </body>
 </html>
