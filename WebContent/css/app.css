@@ -34,8 +34,62 @@ body {
 	padding-top: 9px;
 }
 */
-a:link,a:visited {
-	text-decoration: none;
+a:visited,
+a:link {
+  text-decoration: none;
+}
+
+body,
+p,
+td,
+th,
+input,
+select,
+button,
+dd,
+dl,
+dt,
+ul,
+ol,
+li,
+textarea {
+  font-family: "Microsoft YaHei", Helvetica, Verdana, Arial, Tahoma;
+}
+
+p,
+dd,
+dl,
+dt,
+ul,
+ol,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  padding: 0;
+}
+
+img {
+  border: 0;
+  text-decoration: none;
+}
+
+a:hover,
+a:active {
+  text-decoration: underline;
+}
+
+body {
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+input {
+  overflow: hidden;
 }
 
 pre {
@@ -267,4 +321,6 @@ fieldset {
 .show-other-title li {
 	list-style-type: decimal;
 }
+
+
 

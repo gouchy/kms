@@ -52,7 +52,7 @@
 				$("#show-knowledge-dialog").dialog("open");
 				break;
 			case RET_NO_RIGHT:
-			case RET_IS_ERROR:
+			case RET_PARA_IS_ERROR:
 			default:
 				jAlert("发生故障，请重新再试试。", "提醒");
 				break;
@@ -158,7 +158,28 @@
 		}
 	});
 });
-
+ 
+ /**
+  * 新增图文知识的窗口初始化
+  */
+$(function() {
+	$("#create-mul-knowledge-dialog").dialog({
+		autoOpen : false,
+		height : 700,
+		width : 1050,
+		modal : true,
+		buttons: {
+			"新增知识": function(){
+				
+			},
+			"放弃": function(){
+				$(this).dialog("close");
+			}
+	
+		}
+	});
+});
+ 
  /**
   * 编辑知识窗口初始化
   */
@@ -304,6 +325,60 @@ $(function(){
 	});
 });
 
+// 新增图文知识按钮
+$(function(){
+	$("#createMulKnowledge").button().click(function(event){
+		// 获取当前所在节点的id
+		var selectedNode = $("#subject-tree").jstree("get_selected");
+		var currentSubjectId = 0;
+		if(selectedNode != null && selectedNode.length > 0)
+		{
+			currentSubjectId = selectedNode.attr("id");
+		}
+		else
+		{
+			// jAlert("您没有选中任何的知识分类。", "提醒");
+			// return;
+			// 默认选中跟类别
+			
+		}
+		
+		if(currentSubjectId == 0 || currentSubjectId == "0")
+		{
+			jAlert("不能在根分类下面增加知识。", "提醒");
+			return;
+		}
+		
+//		$("#add-subject-id").val(currentSubjectId);
+		
+		// 清理界面内容为空
+		$(".cover h4 span").text("标题");
+		$(".cover img").attr("src", "");
+		
+		var item = $(".sub-msg-item:last").clone(true);
+		$(".sub-msg-item").remove();
+		item.children("span").children("img").attr("src", "");
+		item.children("h4").children("span").text("标题");
+		$(".sub-add").before(item);
+		
+		$("#mul-current-item").val(0);
+		$("#mul-title").val();
+		editor.setContent("");
+		// TODO：图片清除
+		// TODO：原文链接清除
+		
+		
+//		$("#knowledge-title").val("");
+//		$("#knowledge-content").val("");
+//		var cloneTitle = $("input[name=other-knowledge-title]:last").clone();
+//		cloneTitle.val("");
+//		$("#other-knowledge-title-panel").empty();
+//		$("#other-knowledge-title-panel").append(cloneTitle);
+		
+		$("#create-mul-knowledge-dialog").dialog("open");
+	});
+});
+
 // 点击编辑按钮
 $(function(){
 	$("#editKnowledge").button().click(function(event)
@@ -339,7 +414,7 @@ $(function(){
 			}
 			break;
 		case RET_NO_RIGHT:
-		case RET_IS_ERROR:
+		case RET_PARA_IS_ERROR:
 		default:
 			jAlert("发生故障，请重新再试试。", "提醒");
 			break;
@@ -467,3 +542,177 @@ $(function(){
 		return false;
 	});
 });
+
+
+
+
+
+
+
+
+
+
+
+/***************************************************************************************
+ * 图文知识窗口的相关操作
+ */
+/**
+ * 鼠标悬停的效果
+ */
+$(function(){
+	$(".knowledge-item").hover(function(){
+		$(this).children("ul").addClass("sub-msg-opr-show");
+	}, function(){
+		$(this).children("ul").removeClass("sub-msg-opr-show");
+	});
+});
+
+/**
+ * 新增知识Item
+ */
+$(function(){
+	$(".sub-add-btn").click(function(){
+		if($(".sub-msg-item").size() > 7)
+		{
+			jAlert("不能再增加了，只能这么多条。", "提醒");
+			reutrn;
+		}
+		
+		var cloneItem = $(".sub-msg-item:last").clone(true);
+		cloneItem.children("span").children("img").attr("src", "");
+		cloneItem.children("h4").children("span").text("标题");
+		cloneItem.children("input").val("");
+		var id = parseInt(cloneItem.attr("id").substr(10)) + 1;
+		
+		// 设置复制的节点的各个属性
+		cloneItem.attr("id", "appmsgItem" + id);
+		cloneItem.children("ul").children("li").children("a").attr("data-rid", id);
+		cloneItem.children("ul").children("li").children("a").attr("data-rid", id);
+		
+		$(".sub-add").before(cloneItem);
+	});
+});
+
+/**
+ * 删除某一个Item
+ */
+$(function(){
+	$(".iconDel").click(function(){
+		if($(".sub-msg-item").size() == 1)
+		{
+			jAlert("最后一个不能删除。", "提醒");
+			return;
+		}
+		
+		// 按钮的上是整个item元素
+		var item = $(this).parent().parent().parent();
+		jConfirm("真的要删除此项目吗？", "请确认", function(r){
+			if(r == false)
+				return;
+			var deleteItemTop = item.position().top;
+			var deleteItemHeight = item.height();
+			item.remove();
+			
+			// 删除时，如果发现编辑框已经在这个下面了，需要上移到第一个节点
+			if(parseInt($("#msgEditArea").css("margin-top")) == deleteItemTop)
+			{
+				$("#msgEditArea").css("margin-top", $(".cover").position().top);
+			}
+			// 删除的节点是当前编辑节点的上面某一个节点的时候，编辑框需要上移一格
+			else if(deleteItemTop < parseInt($("#msgEditArea").css("margin-top")))
+			{
+				$("#msgEditArea").css("margin-top", parseInt($("#msgEditArea").css("margin-top")) - deleteItemHeight);
+			}
+		});
+	});
+});
+
+/**
+ * 编辑某一个Item
+ */
+$(function(){
+	$(".iconEdit").click(function(){
+		// 按钮的上是整个item元素
+		var item = $(this).parent().parent().parent();
+		$("#msgEditArea").css("margin-top", item.position().top);
+		id = $(this).attr("data-rid");
+		
+		// 清除已有的值
+		$("#mul-title").val("");
+		
+		// 获取当前选中的值
+		
+		$("#mul-current-item").val(id); // 设置当前编辑的区域的id，注意顺序，editor.setContent会触发事件
+		var title = item.children("h4").children("span").text();
+		if(title != "标题")
+		{
+			$("#mul-title").val(title);
+		}
+		var content = item.children("input").val();
+		editor.setContent(content); 
+		
+
+	});
+});
+
+$(function(){
+	$("#mul-edit-img-upload").fileupload({
+		dataType: "json",
+		acceptFileTypes:  /(\.|\/)(gif|jpe?g|png)$/i,
+		maxFileSize: 5000000,
+		disableImageResize: /Android(?!.*Chrome)|Opera/
+            .test(window.navigator && navigator.userAgent),
+        previewMaxWidth: 100,
+        previewMaxHeight: 100,
+        previewCrop: true
+	});
+	
+	$("#mul-edit-img-upload").bind("fileuploaddone", function(e, data){
+		if(data.result.state == "SUCCESS")
+		{
+			$("#mul-edit-img").attr("src", data.result.url);
+		}
+		else
+		{
+			jAlert(data.result.state, "提醒");
+		}
+	});
+	
+	$("#mul-edit-img-upload").bind("fileuploadfail", function(e, data){
+		jAlert("上传失败，请重试。", "提醒");
+	});
+});
+
+/**
+ * UEditor编辑器初始化设置
+ */
+var editor = null;
+$(function(){
+	editor = new baidu.editor.ui.Editor();
+	editor.render("myEditor");
+	editor.ready(function(){
+		editor.setHeight(150);
+	});
+});
+
+/**
+ * 编辑区域发生变化时，修改相应的值
+ */
+$(function(){
+	$("#mul-title").keyup(function(){
+		var content = $(this).val();
+		var id = "#appmsgItem" + $("#mul-current-item").val();
+		$(id).children("h4").children("span").text(content);
+	});
+	
+	editor.addListener("contentChange", function(){
+		var id = "#appmsgItem" + $("#mul-current-item").val();
+		$(id).children("input").val(editor.getContent());
+	});
+	
+});
+
+
+
+
+

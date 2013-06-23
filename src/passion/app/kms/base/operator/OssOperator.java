@@ -51,6 +51,17 @@ public class OssOperator
 		return true;
 	}
 	
+	public static boolean putImage(String filename, String contentType, long length, InputStream bis)
+	{
+		ObjectMetadata meta = new ObjectMetadata();
+		meta.setContentType(contentType);
+		meta.setContentLength(length);
+		
+		client.putObject(ConfigProperties.getKey(ConfigList.BASIC, "OSS_IMAGE_BUCKET_NAME"), filename, bis, meta);
+		
+		return true;
+	}
+	
 	public static void main(String[] args)
 	{
 		//putMessage("51talking", "<xml><a>abc</a></xml>");
